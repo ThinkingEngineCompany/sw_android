@@ -21,19 +21,28 @@
     <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" /> <!-- 为了修复 在读取包含位置信息的视频产生ANR的问题 -->
     <!-- To fix an issue that generated ANR when reading videos containing location information -->
     <uses-permission android:name="android.permission.ACCESS_MEDIA_LOCATION" />
-
+    <supports-screens android:smallScreens="true" android:normalScreens="true" android:largeScreens="true" android:xlargeScreens="true" android:anyDensity="true" />
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/Theme.Beauty"
+        android:largeHeap="true"
         tools:targetApi="31">
         <activity
             android:name=".PlayActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:screenOrientation="portrait"
+            android:launchMode="singleTask"
+            android:configChanges="mcc|mnc|locale|touchscreen|keyboard|keyboardHidden|navigation|orientation|screenLayout|uiMode|screenSize|smallestScreenSize|fontScale|layoutDirection|density"
+            android:resizeableActivity="false" android:hardwareAccelerated="false">
+            <meta-data android:name="unityplayer.UnityActivity" android:value="true" />
+            <meta-data android:name="notch_support" android:value="true" />
+        </activity>
         <activity
             android:name=".MainActivity"
+            android:screenOrientation="portrait"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

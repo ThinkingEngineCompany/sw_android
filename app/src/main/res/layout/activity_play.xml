@@ -5,7 +5,12 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".PlayActivity">
-
+    <FrameLayout
+        android:id="@+id/mView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="visible" >
+    </FrameLayout>
     <com.sw.beauty.ui.StrokeTextView
         android:id="@+id/title"
         android:layout_width="wrap_content"
