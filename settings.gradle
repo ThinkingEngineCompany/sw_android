@@ -14,3 +14,6 @@ dependencyResolutionManagement {
 }
 rootProject.name = "Beauty"
 include ':app'
+
+// File | Settings | Build, Execution, Deployment | Build Tools | Gradle
+// Gradle JDK  : Java 11

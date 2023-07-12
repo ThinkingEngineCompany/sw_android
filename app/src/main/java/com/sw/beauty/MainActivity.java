@@ -14,7 +14,6 @@ import androidx.appcompat.app.AppCompatActivity;
 
 public class MainActivity extends AppCompatActivity {
 
-
     private static final int CAMERA_PERMISSION_REQUEST_CODE = 200;
 
     @Override

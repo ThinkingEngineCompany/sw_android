@@ -6,6 +6,9 @@
     </style>
 
     <style name="Theme.Beauty" parent="Base.Theme.Beauty" >
+        <item name="android:windowBackground">#ffffff</item>
+    </style>
+    <style name="Theme.BeautyS" parent="Base.Theme.Beauty" >
         <item name="android:windowIsTranslucent">true</item>
     </style>
 </resources>

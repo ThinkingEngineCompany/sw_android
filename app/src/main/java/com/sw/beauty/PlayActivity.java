@@ -22,13 +22,16 @@ public class PlayActivity extends AppCompatActivity implements
         IUnityPlayerLifecycleEvents {
     private long exitTime = 0;
     protected UnityPlayer mUnityPlayer;
+    private MatModule mat;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_play);
-        initUnity();
+        UnityModule unity = new UnityModule(this);
+        mat = new MatModule(this);
+        mUnityPlayer = unity.mUnityPlayer;
     }
 
     @Override
@@ -40,23 +43,6 @@ public class PlayActivity extends AppCompatActivity implements
             finish();
             System.exit(0);
         }
-    }
-
-    protected String updateUnityCommandLineArguments(String cmdLine) {
-        return cmdLine;
-    }
-
-    private void initUnity() {
-        String cmdLine = updateUnityCommandLineArguments(getIntent().getStringExtra("unity"));
-        getIntent().putExtra("unity", cmdLine);
-
-        mUnityPlayer = new UnityPlayer(this);
-        FrameLayout mView = findViewById(R.id.mView);
-        if (mUnityPlayer.getChildAt(0) instanceof SurfaceView) {
-            ((SurfaceView) mUnityPlayer.getChildAt(0)).setZOrderOnTop(false);
-        }
-        mView.addView(mUnityPlayer);
-        mUnityPlayer.requestFocus();
     }
 
     @Override
@@ -87,7 +73,7 @@ public class PlayActivity extends AppCompatActivity implements
     @Override
     protected void onResume() {
         super.onResume();
-
+        mat.onResume();
         if (MultiWindowSupport.getAllowResizableWindow(this) && !MultiWindowSupport.isMultiWindowModeChangedToTrue(this))
             return;
 
