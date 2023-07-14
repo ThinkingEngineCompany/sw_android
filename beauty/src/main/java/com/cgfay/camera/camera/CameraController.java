@@ -632,7 +632,7 @@ public class CameraController implements ICameraController, Camera.PreviewCallba
     /**
      * 比较器
      */
-    private static class CompareAreaSize implements Comparator<Camera.Size> {
+    public static class CompareAreaSize implements Comparator<Camera.Size> {
         @Override
         public int compare(Camera.Size pre, Camera.Size after) {
             return Long.signum((long) pre.width * pre.height -
