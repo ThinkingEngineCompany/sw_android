@@ -1,0 +1,3 @@
+configurations.maybeCreate("default")
+artifacts.add("default", file('MGFaceppSDK-0.5.2.aar'))
+artifacts.add("default", file('MGLicenseManagerSDK-0.3.1.aar'))

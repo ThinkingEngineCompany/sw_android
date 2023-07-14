@@ -1,0 +1,23 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <application>
+        <activity
+            android:name=".activity.VideoCutActivity"
+            android:theme="@style/VideoTheme" />
+        <activity
+            android:name=".activity.VideoEditActivity"
+            android:theme="@style/VideoTheme" />
+        <activity android:name=".activity.MultiVideoActivity"
+            android:theme="@style/VideoTheme"/>
+
+        <activity
+            android:name="com.cgfay.camera.activity.CameraActivity"
+            android:theme="@style/NoActionBarTheme"
+            android:screenOrientation="portrait"/>
+        <activity android:name="com.cgfay.camera.activity.CameraSettingActivity" />
+        <activity android:name="com.cgfay.camera.activity.WatermarkActivity"/>
+        <activity android:name="com.cgfay.image.activity.ImagePreviewActivity"></activity>
+        <activity android:name="com.cgfay.image.activity.ImageEditActivity" />
+    </application>
+
+</manifest>

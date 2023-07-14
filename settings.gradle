@@ -17,3 +17,6 @@ include ':app'
 
 // File | Settings | Build, Execution, Deployment | Build Tools | Gradle
 // Gradle JDK  : Java 11
+include ':beauty'
+include ':aar_dep'
+

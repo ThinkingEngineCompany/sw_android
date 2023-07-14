@@ -1,0 +1,175 @@
+<resources>
+    <string name="app_name">BeautyLibrary</string>
+
+    <string-array name="video_speed_texts">
+        <item>慢</item>
+        <item>标准</item>
+        <item>快</item>
+    </string-array>
+
+    <string name="video_crop_next">下一步</string>
+    <string name="video_crop_time_15">15秒</string>
+    <string name="video_crop_time_120">2分钟</string>
+    <string name="video_crop_selected_time">已选取%1$d秒</string>
+    <string name="video_crop_selected_error">解析数据出现错误，暂不支持该视频</string>
+    <string name="video_crop_progress_tips">处理中...</string>
+
+    <!-- 编辑页面 -->
+    <string name="video_edit_back_press">返回上一步会丢失当前效果，是否返回</string>
+    <string name="video_edit_select_music">选配乐</string>
+    <string name="video_edit_voice">声音</string>
+    <string name="video_edit_cut_music">剪音乐</string>
+    <string name="video_edit_effect">特效</string>
+    <string name="video_edit_text">文字</string>
+    <string name="video_edit_filter">滤镜</string>
+    <string name="video_edit_stickers">贴纸</string>
+    <string name="video_edit_next">下一步</string>
+    <string name="video_edit_cancel">取消</string>
+    <string name="video_edit_save">保存</string>
+    <!-- 声音控制 -->
+    <string name="video_voice_save">保存</string>
+    <string name="video_voice_source">原声</string>
+    <string name="video_voice_background">配乐</string>
+    <string name="video_cut_music_title">左右拖动声谱以剪取音乐</string>
+
+    <!-- 特效提示 -->
+    <string name="video_edit_effect_hint">选择位置后，按住使用效果</string>
+    <string name="video_edit_effect_cancel">撤销</string>
+    <string name="video_edit_effect_category_filter">滤镜特效</string>
+    <string name="video_edit_effect_category_time">时间特效</string>
+
+
+    <!-- 返回操作 -->
+    <string name="back_pressed_message">退出当前操作?</string>
+    <!--权限请求-->
+    <string name="request_camera_permission">需要相机权限</string>
+    <string name="request_storage_permission">需要存储权限</string>
+    <string name="request_sound_permission">需要录音权限</string>
+
+    <string name="btn_dialog_cancel">取消</string>
+    <string name="btn_dialog_ok">确定</string>
+    <string name="music_selection">选择音乐</string>
+
+    <string name="delete_last_video_tips">删除上一段视频？</string>
+    <string name="btn_delete">删除</string>
+
+    <!-- 合并提示 -->
+    <string name="combine_video_message">正在合并视频...</string>
+
+    <!--顶部设置文字-->
+    <string name="tv_flash">闪光灯</string>
+    <string name="tv_flash_front">柔光自拍</string>
+    <string name="tv_time_lapse">延时拍摄</string>
+    <string name="tv_luminous_compensation">夜拍补光</string>
+    <string name="tv_edge_blur">边框模糊</string>
+    <string name="tv_touch_take">触屏拍照</string>
+    <string name="tv_camera_setting">相机设置</string>
+    <string name="tv_select_music">选择音乐</string>
+    <string name="btn_stickers">道具</string>
+    <string name="btn_media">上传</string>
+
+    <!-- 滤镜页面按钮 -->
+    <string name="tab_preview_beauty">美颜</string>
+    <string name="tab_preview_makeup">美妆</string>
+    <string name="tab_preview_filter">滤镜</string>
+
+    <!-- 美颜 -->
+    <string-array name="preview_beauty">
+        <item>磨皮</item>
+        <item>肤色</item>
+        <item>瘦脸</item>
+        <item>削脸</item>
+        <item>小脸</item>
+        <item>下巴</item>
+        <item>法令纹</item>
+        <item>额头</item>
+        <item>大眼</item>
+        <item>眼距</item>
+        <item>眼角</item>
+        <item>卧蚕</item>
+        <item>眼袋</item>
+        <item>亮眼</item>
+        <item>瘦鼻</item>
+        <item>鼻翼</item>
+        <item>长鼻</item>
+        <item>嘴型</item>
+        <item>美牙</item>
+    </string-array>
+
+    <!-- 美妆 -->
+    <string-array name="preview_makeup">
+        <item>口红</item>
+        <item>腮红</item>
+        <item>阴影</item>
+        <item>眉毛</item>
+        <item>眼影</item>
+        <item>眼线</item>
+        <item>睫毛</item>
+        <item>双眼皮</item>
+        <item>瞳孔</item>
+    </string-array>
+
+    <string name="makeup_clear">一键清除</string>
+
+    <string name="tab_picture">拍照</string>
+    <string name="tab_video_60s">拍60秒</string>
+    <string name="tab_video_15s">拍15秒</string>
+    <string name="tab_video_picture">影集</string>
+
+    <!-- 录制速度 -->
+    <string-array name="record_speed_texts">
+        <item>极慢</item>
+        <item>慢</item>
+        <item>标准</item>
+        <item>快</item>
+        <item>极快</item>
+    </string-array>
+
+    <!-- 特效页面参数 -->
+    <string name="preview_beauty_reset">恢复默认</string>
+
+    <!-- 相机设置页面 -->
+    <string name="select_watermark">选择水印</string>
+    <string name="show_face_points">显示人脸关键点</string>
+    <string name="hide_face_points">隐藏人脸关键点</string>
+    <string name="show_fps">显示fps</string>
+    <string name="hide_fps">隐藏fps</string>
+
+    <string name="btn_crop">裁剪</string>
+    <string name="btn_filter">滤镜</string>
+    <string name="btn_toolbox">编辑工具箱</string>
+    <string name="btn_save">保存</string>
+
+    <string name="btn_internal">内置</string>
+    <string name="btn_customize">自定义</string>
+    <string name="btn_collection">收藏</string>
+    <string name="btn_setting">设置</string>
+    <string name="btn_add">添加</string>
+
+    <!-- 裁剪页面按钮 -->
+    <string name="btn_horizontal">水平</string>
+    <string name="btn_ratio">长宽比</string>
+    <string name="btn_rotate">旋转</string>
+    <string name="btn_flip">翻转</string>
+    <string name="btn_vertical_perspective">纵向透视</string>
+    <string name="btn_horizontal_perspective">横向透视</string>
+    <string name="btn_stretch">拉伸</string>
+
+    <!-- 编辑工具箱按钮 -->
+    <string name="btn_toolbox_back">返回</string>
+    <string name="btn_adjust">调整</string>
+    <string name="btn_effect">效果</string>
+    <string name="btn_texture">纹理</string>
+    <string name="btn_blur">虚化</string>
+    <string name="btn_curve">曲线</string>
+    <string name="btn_hue_saturation">色相/饱和度</string>
+    <string name="btn_tone_separation">色调分离</string>
+    <string name="btn_color_balance">色彩平衡</string>
+
+    <string name="album_all">所有照片</string>
+    <string name="media_empty">没有%1$s</string>
+    <string name="preview_btn_edit">编辑</string>
+    <string name="video_single_picker">单段视频</string>
+    <string name="video_multi_picker">多段视频</string>
+
+</resources>
