@@ -22,7 +22,8 @@ public class PlayActivity extends AppCompatActivity implements
         IUnityPlayerLifecycleEvents {
     private long exitTime = 0;
     protected UnityPlayer mUnityPlayer;
-    private MatModule mat;
+//    private MatModule mat;
+    private BeautyModule beauty;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,8 +31,14 @@ public class PlayActivity extends AppCompatActivity implements
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_play);
         UnityModule unity = new UnityModule(this);
-        mat = new MatModule(this);
+
+        beauty = new BeautyModule(this);
         mUnityPlayer = unity.mUnityPlayer;
+    }
+
+    @Override
+    public void onAttachedToWindow() {
+        super.onAttachedToWindow();
     }
 
     @Override
@@ -62,18 +69,12 @@ public class PlayActivity extends AppCompatActivity implements
 
     }
 
-    @Override
-    protected void onStop() {
-        super.onStop();
-        if (!MultiWindowSupport.getAllowResizableWindow(this))
-            return;
-        mUnityPlayer.pause();
-    }
+
 
     @Override
     protected void onResume() {
         super.onResume();
-        mat.onResume();
+        beauty.onResume();
         if (MultiWindowSupport.getAllowResizableWindow(this) && !MultiWindowSupport.isMultiWindowModeChangedToTrue(this))
             return;
 
@@ -83,9 +84,31 @@ public class PlayActivity extends AppCompatActivity implements
     @Override
     protected void onStart() {
         super.onStart();
+        beauty.onStart();
         if (!MultiWindowSupport.getAllowResizableWindow(this))
             return;
         mUnityPlayer.resume();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        beauty.onPause();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        beauty.onStop();
+        if (!MultiWindowSupport.getAllowResizableWindow(this))
+            return;
+        mUnityPlayer.pause();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        beauty.onDestroy();
     }
 
     // Low Memory Unity

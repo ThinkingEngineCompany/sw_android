@@ -16,7 +16,7 @@ import com.cgfay.media.recorder.SpeedMode;
  * @author CainHuang
  * @date 2019/7/3
  */
-public abstract class PreviewPresenter<T extends Fragment> extends IPresenter<T> {
+public abstract class PreviewPresenter<T> extends IPresenter<T> {
 
     protected PreviewPresenter(T target) {
         super(target);

@@ -37,7 +37,7 @@
             android:screenOrientation="portrait"
             android:launchMode="singleTask"
             android:configChanges="mcc|mnc|locale|touchscreen|keyboard|keyboardHidden|navigation|orientation|screenLayout|uiMode|screenSize|smallestScreenSize|fontScale|layoutDirection|density"
-            android:resizeableActivity="false" android:hardwareAccelerated="false">
+            android:resizeableActivity="false">
             <meta-data android:name="unityplayer.UnityActivity" android:value="true" />
             <meta-data android:name="notch_support" android:value="true" />
         </activity>

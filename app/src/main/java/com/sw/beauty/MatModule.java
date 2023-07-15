@@ -23,7 +23,8 @@ public class MatModule implements SurfaceHolder.Callback {
 
     public MatModule(PlayActivity playActivity) {
         this.playActivity = playActivity;
-        cameraView = (SurfaceView) playActivity.findViewById(R.id.cameraview);
+        // not work
+//        cameraView = (SurfaceView) playActivity.findViewById(R.id.cameraview);
         cameraView.setZOrderOnTop(false);
         cameraView.getHolder().setFormat(PixelFormat.TRANSLUCENT);
         cameraView.getHolder().addCallback(this);
