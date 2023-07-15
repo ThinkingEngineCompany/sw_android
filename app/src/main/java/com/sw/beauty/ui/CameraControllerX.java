@@ -67,20 +67,19 @@ public class CameraControllerX implements ICameraController, Camera.PreviewCallb
     public CameraControllerX(@NonNull Activity activity) {
         Log.d(TAG, "CameraController: created！");
         mActivity = activity;
-    }
-
-    @Override
-    public void openCamera() {
         boolean ret_init = ncnnbodyseg.loadModel(mActivity.getAssets(), current_model, current_cpugpu, 1);
         if (!ret_init) {
             Log.e("MainActivity", "ncnnbodyseg loadModel failed");
         }
-
-        ncnnbodyseg.closeCamera();
         releaseSurfaceTexture();
         mOutputTexture = createDetachedSurfaceTexture();
-        ncnnbodyseg.openCamera(facing);
         ncnnbodyseg.setOutputSurface(mOutputTexture);
+    }
+
+    @Override
+    public void openCamera() {
+        ncnnbodyseg.closeCamera();
+        ncnnbodyseg.openCamera(facing);
         if (mSurfaceTextureListener != null) {
             mSurfaceTextureListener.onSurfaceTexturePrepared(mOutputTexture);
         }
@@ -93,12 +92,8 @@ public class CameraControllerX implements ICameraController, Camera.PreviewCallb
      */
     private SurfaceTexture createDetachedSurfaceTexture() {
         // 创建一个新的SurfaceTexture并从解绑GL上下文
-        int[] textures = new int[1];
-        GLES20.glGenTextures(1, textures, 0);
-        int mTextureId = textures[0];
-
-        // 创建 SurfaceTexture 对象
-        SurfaceTexture surfaceTexture = new SurfaceTexture(mTextureId);
+        SurfaceTexture surfaceTexture = new SurfaceTexture(0);
+        surfaceTexture.detachFromGLContext();
         if (Build.VERSION.SDK_INT >= 21) {
             if (mOutputThread != null) {
                 mOutputThread.quit();

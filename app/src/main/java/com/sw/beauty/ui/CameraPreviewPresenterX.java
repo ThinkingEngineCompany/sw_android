@@ -137,6 +137,8 @@ public class CameraPreviewPresenterX extends PreviewPresenter<CameraPreviewFragm
 //            mCameraController = new CameraController(mActivity);
 //        }
         mCameraController = new CameraControllerX(mActivity);
+        // 不经过抠像,直接使用相机数据
+//        mCameraController = new CameraController(mActivity);
         mCameraController.setPreviewCallback(this);
         mCameraController.setOnFrameAvailableListener(this);
         mCameraController.setOnSurfaceTextureListener(this);
