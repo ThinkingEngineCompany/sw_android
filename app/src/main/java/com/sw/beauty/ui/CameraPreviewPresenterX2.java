@@ -361,7 +361,8 @@ public class CameraPreviewPresenterX2 extends PreviewPresenter<BeautyModule>
             height = mCameraController.getPreviewHeight();
         }
         mVideoParams.setVideoSize(width, height);
-        mCameraRenderer.setTextureSize(width, height);
+//        mCameraRenderer.setTextureSize(width, height);// 1280 720
+        mCameraRenderer.setTextureSize(480, 640);
     }
 
     /**
