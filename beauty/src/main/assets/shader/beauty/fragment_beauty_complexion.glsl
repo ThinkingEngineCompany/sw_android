@@ -12,7 +12,8 @@ uniform lowp float alpha; // 肤色成都
 
 void main() {
     lowp vec3 textureColor = texture2D(inputTexture, textureCoordinate).rgb;
-
+    lowp float rAlpha = texture2D(inputTexture, textureCoordinate).a;
+//    textureColor = clamp((texture2D(inputTexture, textureCoordinate).rgb - vec3(levelBlack, levelBlack, levelBlack)) * levelRangeInv, 0.0, 1.0);
     textureColor = clamp((textureColor - vec3(levelBlack, levelBlack, levelBlack)) * levelRangeInv, 0.0, 1.0);
     textureColor.r = texture2D(grayTexture, vec2(textureColor.r, 0.5)).r;
     textureColor.g = texture2D(grayTexture, vec2(textureColor.g, 0.5)).g;
@@ -43,5 +44,6 @@ void main() {
 
     textureColor = mix(textureColor, newColor, alpha);
 
-    gl_FragColor = vec4(textureColor, 1.0); 
+    //gl_FragColor = textureColor;
+    gl_FragColor = vec4(textureColor, rAlpha);
 }

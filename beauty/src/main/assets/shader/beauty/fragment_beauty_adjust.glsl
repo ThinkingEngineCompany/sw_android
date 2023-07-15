@@ -17,5 +17,6 @@ void main() {
     // 混合输出结果
     lowp vec3 resultColor = mix(sourceColor.rgb, blurColor.rgb, currentIntensity);
     // 输出颜色
-    gl_FragColor = vec4(resultColor, 1.0);
+    gl_FragColor = vec4(resultColor, sourceColor.a);
+//    gl_FragColor = vec4(resultColor, 1.0);
 }

@@ -203,6 +203,7 @@ public class CameraPreviewFragmentX extends Fragment implements View.OnClickList
         mCameraTextureView.addOnTouchScroller(mTouchScroller);
         mCameraTextureView.addMultiClickListener(mMultiClickListener);
         mCameraTextureView.setSurfaceTextureListener(mSurfaceTextureListener);
+        mCameraTextureView.setOpaque(false);
         mPreviewLayout.addView(mCameraTextureView);
 
         // 添加圆角显示

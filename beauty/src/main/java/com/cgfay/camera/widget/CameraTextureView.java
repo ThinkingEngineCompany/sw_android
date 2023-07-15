@@ -41,7 +41,7 @@ public class CameraTextureView extends TextureView {
     private OnMultiClickListener mMultiClickListener;
 
     // 手势监听器
-    private GestureDetectorCompat mGestureDetector;
+//    private GestureDetectorCompat mGestureDetector;
 
     public CameraTextureView(Context context) {
         this(context, null);
@@ -60,100 +60,100 @@ public class CameraTextureView extends TextureView {
     StaticStickerNormalFilter dragSticker=null;
     private void init(Context context) {
         setClickable(true);
-        mGestureDetector = new GestureDetectorCompat(getContext(), new GestureDetector.OnGestureListener() {
-            @Override
-            public boolean onDown(MotionEvent e) {
-                if (VERBOSE) {
-                    Log.d(TAG, "onDown: ");
-                }
-                //测试贴纸触摸
-
-                return false;
-            }
-
-            @Override
-            public void onShowPress(MotionEvent e) {
-                if (VERBOSE) {
-                    Log.d(TAG, "onShowPress: ");
-                }
-            }
-
-            @Override
-            public boolean onSingleTapUp(MotionEvent e) {
-                if (VERBOSE) {
-                    Log.d(TAG, "onSingleTapUp: ");
-                }
-                dragSticker = null;
-                return false;
-            }
-
-            @Override
-            public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
-                if (VERBOSE) {
-                    Log.d(TAG, "onScroll: ");
-                }
-
-                if (dragSticker != null) {
-                    dragSticker.onScroll(distanceX,distanceY);
-                    return true;
-                }
-
-                // 上下滑动
-                if (Math.abs(distanceX) < Math.abs(distanceY) * 1.5) {
-                    // 是否从左边开始上下滑动
-                    boolean leftScroll = e1.getX() < getWidth() / 2;
-                    if (distanceY > 0) {
-                        if (mScroller != null) {
-                            mScroller.swipeUpper(leftScroll, Math.abs(distanceY));
-                        }
-                    } else {
-                        if (mScroller != null) {
-                            mScroller.swipeDown(leftScroll, Math.abs(distanceY));
-                        }
-                    }
-                }
-
-                return true;
-            }
-
-            @Override
-            public void onLongPress(MotionEvent e) {
-                if (VERBOSE) {
-                    Log.d(TAG, "onLongPress: ");
-                }
-            }
-
-            @Override
-            public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
-                if (VERBOSE) {
-                    Log.d(TAG, "onFling: ");
-                }
-
-                if (dragSticker != null) {
-                    return false;
-                }
-
-                // 快速左右滑动
-                if (Math.abs(velocityX) > Math.abs(velocityY) * 1.5) {
-                    if (velocityX < 0) {
-                        if (mScroller != null) {
-                            mScroller.swipeBack();
-                        }
-                    } else {
-                        if (mScroller != null) {
-                            mScroller.swipeFrontal();
-                        }
-                    }
-                }
-                return false;
-            }
-        });
-        mGestureDetector.setOnDoubleTapListener(mDoubleTapListener);
+//        mGestureDetector = new GestureDetectorCompat(getContext(), new GestureDetector.OnGestureListener() {
+//            @Override
+//            public boolean onDown(MotionEvent e) {
+//                if (VERBOSE) {
+//                    Log.d(TAG, "onDown: ");
+//                }
+//                //测试贴纸触摸
+//
+//                return false;
+//            }
+//
+//            @Override
+//            public void onShowPress(MotionEvent e) {
+//                if (VERBOSE) {
+//                    Log.d(TAG, "onShowPress: ");
+//                }
+//            }
+//
+//            @Override
+//            public boolean onSingleTapUp(MotionEvent e) {
+//                if (VERBOSE) {
+//                    Log.d(TAG, "onSingleTapUp: ");
+//                }
+//                dragSticker = null;
+//                return false;
+//            }
+//
+//            @Override
+//            public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
+//                if (VERBOSE) {
+//                    Log.d(TAG, "onScroll: ");
+//                }
+//
+//                if (dragSticker != null) {
+//                    dragSticker.onScroll(distanceX,distanceY);
+//                    return true;
+//                }
+//
+//                // 上下滑动
+//                if (Math.abs(distanceX) < Math.abs(distanceY) * 1.5) {
+//                    // 是否从左边开始上下滑动
+//                    boolean leftScroll = e1.getX() < getWidth() / 2;
+//                    if (distanceY > 0) {
+//                        if (mScroller != null) {
+//                            mScroller.swipeUpper(leftScroll, Math.abs(distanceY));
+//                        }
+//                    } else {
+//                        if (mScroller != null) {
+//                            mScroller.swipeDown(leftScroll, Math.abs(distanceY));
+//                        }
+//                    }
+//                }
+//
+//                return true;
+//            }
+//
+//            @Override
+//            public void onLongPress(MotionEvent e) {
+//                if (VERBOSE) {
+//                    Log.d(TAG, "onLongPress: ");
+//                }
+//            }
+//
+//            @Override
+//            public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+//                if (VERBOSE) {
+//                    Log.d(TAG, "onFling: ");
+//                }
+//
+//                if (dragSticker != null) {
+//                    return false;
+//                }
+//
+//                // 快速左右滑动
+//                if (Math.abs(velocityX) > Math.abs(velocityY) * 1.5) {
+//                    if (velocityX < 0) {
+//                        if (mScroller != null) {
+//                            mScroller.swipeBack();
+//                        }
+//                    } else {
+//                        if (mScroller != null) {
+//                            mScroller.swipeFrontal();
+//                        }
+//                    }
+//                }
+//                return false;
+//            }
+//        });
+//        mGestureDetector.setOnDoubleTapListener(mDoubleTapListener);
     }
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        mGestureDetector.onTouchEvent(event);
+//        mGestureDetector.onTouchEvent(event);
         return super.onTouchEvent(event);
     }
 

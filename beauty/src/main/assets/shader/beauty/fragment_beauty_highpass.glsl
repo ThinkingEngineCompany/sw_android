@@ -13,5 +13,6 @@ void main() {
     highPassColor.g = clamp(2.0 * highPassColor.g * highPassColor.g * intensity, 0.0, 1.0);
     highPassColor.b = clamp(2.0 * highPassColor.b * highPassColor.b * intensity, 0.0, 1.0);
     // 输出的是把痘印等过滤掉
-    gl_FragColor = vec4(highPassColor.rgb, 1.0);
+    gl_FragColor = highPassColor;
+//    gl_FragColor = vec4(highPassColor.rgb, 1.0);
 }

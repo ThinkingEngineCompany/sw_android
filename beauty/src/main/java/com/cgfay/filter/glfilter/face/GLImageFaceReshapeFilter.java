@@ -124,7 +124,7 @@ public class GLImageFaceReshapeFilter extends GLImageDrawElementsFilter implemen
         super.onDrawFrameBegin();
         // 不能开启GL_CULL_FACE，会导致索引绘制出错
         GLES30.glDisable(GL10.GL_CULL_FACE);
-        GLES30.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+        GLES30.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
         GLES30.glClear(GLES30.GL_COLOR_BUFFER_BIT);
         GLES20.glUniform1fv(mReshapeIntensityHandle, 7, FloatBuffer.wrap(mReshapeIntensity));
         GLES30.glUniform2fv(mCartesianPointsHandle, FacePoints, mCartesianBuffer);
