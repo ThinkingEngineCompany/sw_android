@@ -37,14 +37,14 @@ public class CameraActivity extends AppCompatActivity {
                     .replace(R.id.fragment_container, mPreviewFragment, FRAGMENT_CAMERA)
                     .commit();
         }
-        faceTrackerRequestNetwork();
+        //faceTrackerRequestNetwork();
     }
 
     /**
      * 人脸检测SDK验证，可以替换成自己的SDK
      */
     private void faceTrackerRequestNetwork() {
-        new Thread(() -> FaceTracker.requestFaceNetwork(CameraActivity.this)).start();
+        //new Thread(() -> FaceTracker.requestFaceNetwork(CameraActivity.this)).start();
     }
 
     @Override

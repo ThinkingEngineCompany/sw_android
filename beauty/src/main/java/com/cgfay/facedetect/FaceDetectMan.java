@@ -1,0 +1,137 @@
+package com.cgfay.facedetect;
+
+import static android.opengl.GLES20.GL_COLOR_ATTACHMENT0;
+import static android.opengl.GLES20.GL_FRAMEBUFFER;
+import static android.opengl.GLES20.GL_RGBA;
+import static android.opengl.GLES20.GL_TEXTURE_2D;
+import static android.opengl.GLES20.GL_UNSIGNED_BYTE;
+
+import android.content.Context;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.Rect;
+import android.opengl.GLES30;
+import android.util.Log;
+
+import com.duowan.vnnlib.VNN;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+
+public class FaceDetectMan {
+
+    public int mVnnID = VNNHelper.VNN_EFFECT_MODE.VNN_FACE_KEYPOINTS;
+    public VNN.VNN_FaceFrameDataArr faceDetectionFrameData = new VNN.VNN_FaceFrameDataArr();
+
+    public FaceDetectMan(Context context) {
+        String exPath = context.getExternalFilesDir(null).getAbsolutePath();
+        copyAssetsToFiles(context, "vnn_models", exPath + "/vnn_models");
+        String sdcard = context.getExternalFilesDir(null).getAbsolutePath() + "/vnn_models";
+        String[] modelPath = {
+                sdcard + "/vnn_face278_data/face_mobile[1.0.0].vnnmodel"
+        };
+        //VNN.javaTest();
+        mVnnID = VNN.createFace(modelPath);
+    }
+
+    public void detect(int mInputTexture) {
+        Log.e("xie", "detect..:" + mInputTexture);
+        // 创建并绑定帧缓冲区
+        int[] framebufferIds = new int[1];
+        GLES30.glGenFramebuffers(1, framebufferIds, 0);
+        GLES30.glBindFramebuffer(GL_FRAMEBUFFER, framebufferIds[0]);
+
+        // 绑定纹理到帧缓冲区
+        GLES30.glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, mInputTexture, 0);
+
+        // 读取纹理数据
+        int width = 480; // 480, 640
+        int height = 640;
+        ByteBuffer buffer = ByteBuffer.allocateDirect(width * height * 4);
+        buffer.order(ByteOrder.nativeOrder());
+        GLES30.glReadPixels(0, 0, width, height, GL_RGBA, GL_UNSIGNED_BYTE, buffer);
+
+        // 解绑帧缓冲区和纹理
+        GLES30.glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        GLES30.glBindTexture(GL_TEXTURE_2D, 0);
+
+        byte[] bytes = new byte[buffer.position()]; // 创建一个与 buffer 中数据大小相同的 byte 数组
+        buffer.rewind(); // 将 buffer 的位置重置为 0
+        buffer.get(bytes); // 将 buffer 中的数据传输到 byte 数组中
+
+        VNN.VNN_Image inputImage = new VNN.VNN_Image();
+        inputImage.width = 480;
+        inputImage.height = 640;
+        inputImage.data = bytes;
+        inputImage.ori_fmt = VNN.VNN_OrientationFormat.VNN_ORIENT_FMT_FLIP_V
+                | VNN.VNN_OrientationFormat.VNN_ORIENT_FMT_ROTATE_90R;
+        inputImage.pix_fmt = VNN.VNN_PixelFormat.VNN_PIX_FMT_YUV420P_888_SKIP1;
+        inputImage.mode_fmt = VNN.VNN_MODE_FMT.VNN_MODE_FMT_VIDEO;
+
+        faceDetectionFrameData.facesNum = 0;
+        VNN.setFacePoints(mVnnID, 278);
+        int ret = VNN.applyFaceCpu(mVnnID, inputImage, faceDetectionFrameData);
+        Log.e("xie", "detect ret:" + ret);
+        // drawFaceKeyPoints(canvas);
+        for (int i = 0; i < faceDetectionFrameData.facesNum; i++) {
+            Rect faceRect = new Rect();
+            faceRect.left = (int) (faceDetectionFrameData.facesArr[i].faceRect[0] * width);
+            faceRect.top = (int) (faceDetectionFrameData.facesArr[i].faceRect[1] * height);
+            faceRect.right = (int) (faceDetectionFrameData.facesArr[i].faceRect[2] * width);
+            faceRect.bottom = (int) (faceDetectionFrameData.facesArr[i].faceRect[3] * height);
+            Log.e("xie", "faceRect.left:" + faceRect.left + " - top:"
+                    + faceRect.top + " - right:" + faceRect.right + " - right:" + faceRect.bottom);
+            for (int j = 0; j < faceDetectionFrameData.facesArr[i].faceLandmarksNum; j++) {
+                float pointx = (faceDetectionFrameData.facesArr[i].faceLandmarks[j * 2] * width);
+                float pointy = (faceDetectionFrameData.facesArr[i].faceLandmarks[j * 2 + 1] * height);
+            }
+            Log.e("xie", "faceLandmarksNum:" + faceDetectionFrameData.facesArr[i].faceLandmarksNum);
+        }
+    }
+
+    public void destroyVNN(int effectMode) {
+        VNN.destroyFace(mVnnID);
+    }
+
+    public void copyAssetsToFiles(Context context, String oldPath, String newPath) {
+        try {
+            String fileNames[] = context.getAssets().list(oldPath);//获取assets目录下的所有文件及目录名
+            if (fileNames.length > 0) {//如果是目录
+                File file = new File(newPath);
+                if (!file.exists()) {
+                    file.mkdirs();//如果文件夹不存在，则递归
+                }
+                for (String fileName : fileNames) {
+                    String srcPath = oldPath + "/" + fileName;
+                    String dstPath = newPath + "/" + fileName;
+                    File f = new File(dstPath);
+                    if (f.exists()) continue;
+                    copyAssetsToFiles(context, srcPath, dstPath);
+                }
+
+            } else {//如果是文件
+                File file = new File(newPath);
+                if (!file.exists()) {
+                    InputStream is = context.getAssets().open(oldPath);
+                    FileOutputStream fos = new FileOutputStream(file);
+                    byte[] buffer = new byte[1024];
+                    int byteCount = 0;
+                    while ((byteCount = is.read(buffer)) != -1) {//循环从输入流读取 buffer字节
+                        fos.write(buffer, 0, byteCount);//将读取的输入流写入到输出流
+                    }
+                    fos.flush();//刷新缓冲区
+                    is.close();
+                    fos.close();
+                }
+
+            }
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+
+        }
+    }
+}

@@ -14,6 +14,7 @@ import androidx.annotation.Nullable;
 
 import com.cgfay.camera.camera.CameraParam;
 import com.cgfay.camera.presenter.PreviewPresenter;
+import com.cgfay.facedetect.FaceDetectMan;
 import com.cgfay.filter.gles.EglCore;
 import com.cgfay.filter.gles.WindowSurface;
 import com.cgfay.filter.glfilter.color.bean.DynamicColor;
@@ -21,6 +22,7 @@ import com.cgfay.filter.glfilter.makeup.bean.DynamicMakeup;
 import com.cgfay.filter.glfilter.stickers.StaticStickerNormalFilter;
 import com.cgfay.filter.glfilter.stickers.bean.DynamicSticker;
 import com.cgfay.filter.glfilter.utils.OpenGLUtils;
+import com.duowan.vnnlib.VNN;
 
 import java.lang.ref.WeakReference;
 
@@ -60,6 +62,7 @@ public class CameraRenderer extends Thread {
     private final FrameRateMeter mFrameRateMeter;
     // 预览参数
     private CameraParam mCameraParam;
+    private FaceDetectMan mFaceDetectMan;
 
     // Presenter
     private final WeakReference<PreviewPresenter> mWeakPresenter;
@@ -80,6 +83,9 @@ public class CameraRenderer extends Thread {
      * 初始化渲染器
      */
     public void initRenderer() {
+        if (mWeakPresenter.get() != null) {
+            mFaceDetectMan = new FaceDetectMan(mWeakPresenter.get().getContext());
+        }
         synchronized (this) {
             if (!mThreadStarted) {
                 start();
@@ -108,6 +114,7 @@ public class CameraRenderer extends Thread {
 
     /**
      * 绑定Surface
+     *
      * @param surface
      */
     public void onSurfaceCreated(Surface surface) {
@@ -117,6 +124,7 @@ public class CameraRenderer extends Thread {
 
     /**
      * 绑定SurfaceTexture
+     *
      * @param surfaceTexture
      */
     public void onSurfaceCreated(SurfaceTexture surfaceTexture) {
@@ -126,6 +134,7 @@ public class CameraRenderer extends Thread {
 
     /**
      * 设置预览大小
+     *
      * @param width
      * @param height
      */
@@ -144,6 +153,7 @@ public class CameraRenderer extends Thread {
 
     /**
      * 设置输入纹理大小
+     *
      * @param width
      * @param height
      */
@@ -156,6 +166,7 @@ public class CameraRenderer extends Thread {
 
     /**
      * 绑定外部输入的SurfaceTexture
+     *
      * @param surfaceTexture
      */
     public void bindInputSurfaceTexture(@NonNull SurfaceTexture surfaceTexture) {
@@ -204,6 +215,7 @@ public class CameraRenderer extends Thread {
 
     /**
      * 渲染事件
+     *
      * @param runnable
      */
     public void queueEvent(@NonNull Runnable runnable) {
@@ -219,6 +231,7 @@ public class CameraRenderer extends Thread {
 
     /**
      * 获取触摸滤镜
+     *
      * @param e 触摸类型
      * @return 返回触摸滤镜
      */
@@ -233,6 +246,7 @@ public class CameraRenderer extends Thread {
 
     /**
      * 切换滤镜
+     *
      * @param color
      */
     public void changeFilter(DynamicColor color) {
@@ -242,6 +256,7 @@ public class CameraRenderer extends Thread {
 
     /**
      * 切换彩妆
+     *
      * @param makeup
      */
     public void changeMakeup(DynamicMakeup makeup) {
@@ -251,6 +266,7 @@ public class CameraRenderer extends Thread {
 
     /**
      * 切换道具资源
+     *
      * @param color 滤镜
      */
     public void changeResource(DynamicColor color) {
@@ -260,6 +276,7 @@ public class CameraRenderer extends Thread {
 
     /**
      * 切换道具资源
+     *
      * @param sticker 动态贴纸
      */
     public void changeResource(DynamicSticker sticker) {
@@ -269,6 +286,7 @@ public class CameraRenderer extends Thread {
 
     /**
      * 切换边框模糊功能
+     *
      * @param hasBlur 是否允许边框模糊
      */
     public void changeEdgeBlur(boolean hasBlur) {
@@ -277,6 +295,7 @@ public class CameraRenderer extends Thread {
     }
 
     // ---------------------------------------- 渲染内部处理方法 -------------------------------------
+
     /**
      * 初始化渲染器
      */
@@ -290,7 +309,7 @@ public class CameraRenderer extends Thread {
         mDisplaySurface.makeCurrent();
 
         GLES30.glDisable(GL10.GL_DITHER);
-        GLES30.glClearColor(0,0, 0, 0);
+        GLES30.glClearColor(0, 0, 0, 0);
         GLES30.glEnable(GL10.GL_CULL_FACE);
         GLES30.glEnable(GL10.GL_DEPTH_TEST);
 
@@ -312,7 +331,7 @@ public class CameraRenderer extends Thread {
         mDisplaySurface.makeCurrent();
 
         GLES30.glDisable(GL10.GL_DITHER);
-        GLES30.glClearColor(0,0, 0, 0);
+        GLES30.glClearColor(0, 0, 0, 0);
         GLES30.glEnable(GL10.GL_CULL_FACE);
         GLES30.glEnable(GL10.GL_DEPTH_TEST);
 
@@ -326,6 +345,7 @@ public class CameraRenderer extends Thread {
 
     /**
      * 设置预览大小
+     *
      * @param width
      * @param height
      */
@@ -355,6 +375,9 @@ public class CameraRenderer extends Thread {
         if (mInputTexture == OpenGLUtils.GL_NOT_TEXTURE) {
             return;
         }
+        // 将数据传递给人脸库
+
+        mFaceDetectMan.detect(mInputTexture);
         // 绘制渲染
         mCurrentTexture = mRenderManager.drawFrame(mInputTexture, mMatrix);
 
@@ -393,6 +416,7 @@ public class CameraRenderer extends Thread {
 
     /**
      * 更新输入纹理
+     *
      * @param surfaceTexture
      */
     private void updateSurfaceTexture(@NonNull SurfaceTexture surfaceTexture) {
@@ -421,6 +445,7 @@ public class CameraRenderer extends Thread {
 
     /**
      * 绑定外部输入的SurfaceTexture
+     *
      * @param surfaceTexture
      */
     private void onBindInputSurfaceTexture(SurfaceTexture surfaceTexture) {
@@ -444,6 +469,7 @@ public class CameraRenderer extends Thread {
 
     /**
      * 切换边框模糊
+     *
      * @param enableEdgeBlur
      */
     void changeEdgeBlurFilter(boolean enableEdgeBlur) {
@@ -455,6 +481,7 @@ public class CameraRenderer extends Thread {
 
     /**
      * 切换动态滤镜
+     *
      * @param color
      */
     void changeDynamicFilter(DynamicColor color) {
@@ -466,6 +493,7 @@ public class CameraRenderer extends Thread {
 
     /**
      * 切换动态彩妆
+     *
      * @param makeup
      */
     void changeDynamicMakeup(DynamicMakeup makeup) {
@@ -477,6 +505,7 @@ public class CameraRenderer extends Thread {
 
     /**
      * 切换动态资源
+     *
      * @param color
      */
     void changeDynamicResource(DynamicColor color) {
@@ -488,6 +517,7 @@ public class CameraRenderer extends Thread {
 
     /**
      * 切换动态资源
+     *
      * @param sticker
      */
     void changeDynamicResource(DynamicSticker sticker) {
@@ -517,6 +547,7 @@ public class CameraRenderer extends Thread {
 
     /**
      * 获取当前的Looper
+     *
      * @return
      */
     private Looper getLooper() {
@@ -537,6 +568,7 @@ public class CameraRenderer extends Thread {
 
     /**
      * 获取当前线程的Handler
+     *
      * @return
      */
     @NonNull
@@ -549,6 +581,7 @@ public class CameraRenderer extends Thread {
 
     /**
      * 退出渲染线程
+     *
      * @return
      */
     private boolean quit() {
