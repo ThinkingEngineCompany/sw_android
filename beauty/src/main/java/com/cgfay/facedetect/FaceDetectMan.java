@@ -34,7 +34,8 @@ public class FaceDetectMan {
                 sdcard + "/vnn_face278_data/face_mobile[1.0.0].vnnmodel"
         };
         //VNN.javaTest();
-        mVnnID = VNN.createFace(modelPath);
+        mVnnID = VNN.createFace(modelPath); // 1
+        Log.e("xie1", "mVnnID:" + mVnnID);
     }
 
     public void detect(int mInputTexture) {
@@ -67,29 +68,57 @@ public class FaceDetectMan {
         inputImage.height = 640;
         inputImage.data = bytes;
         inputImage.ori_fmt = VNN.VNN_OrientationFormat.VNN_ORIENT_FMT_FLIP_V
-                | VNN.VNN_OrientationFormat.VNN_ORIENT_FMT_ROTATE_90R;
-        inputImage.pix_fmt = VNN.VNN_PixelFormat.VNN_PIX_FMT_YUV420P_888_SKIP1;
+                | VNN.VNN_OrientationFormat.VNN_ORIENT_FMT_ROTATE_90R; // ---
+//        inputImage.pix_fmt = VNN.VNN_PixelFormat.VNN_PIX_FMT_YUV420P_888_SKIP1;
+        inputImage.pix_fmt = VNN.VNN_PixelFormat.VNN_PIX_FMT_RGBA8888;
         inputImage.mode_fmt = VNN.VNN_MODE_FMT.VNN_MODE_FMT_VIDEO;
 
+        detectInner(width, height, inputImage);
+    }
+
+    public void detect(byte[] data, int width, int height) {
+
+        VNN.VNN_Image inputImage = new VNN.VNN_Image();
+        inputImage.width = width; // not use
+        inputImage.height = height;// not use
+        inputImage.data = data;
+        inputImage.ori_fmt = VNN.VNN_OrientationFormat.VNN_ORIENT_FMT_FLIP_V
+                | VNN.VNN_OrientationFormat.VNN_ORIENT_FMT_ROTATE_90R; // ---
+//        inputImage.pix_fmt = VNN.VNN_PixelFormat.VNN_PIX_FMT_YUV420P_888_SKIP1;
+        inputImage.pix_fmt = VNN.VNN_PixelFormat.VNN_PIX_FMT_NV21;
+        inputImage.mode_fmt = VNN.VNN_MODE_FMT.VNN_MODE_FMT_VIDEO;
+
+        detectInner(width, height, inputImage);
+    }
+
+    private void detectInner(int width, int height, VNN.VNN_Image inputImage) {
         faceDetectionFrameData.facesNum = 0;
         VNN.setFacePoints(mVnnID, 278);
         int ret = VNN.applyFaceCpu(mVnnID, inputImage, faceDetectionFrameData);
-        Log.e("xie", "detect ret:" + ret);
-        // drawFaceKeyPoints(canvas);
-        for (int i = 0; i < faceDetectionFrameData.facesNum; i++) {
-            Rect faceRect = new Rect();
-            faceRect.left = (int) (faceDetectionFrameData.facesArr[i].faceRect[0] * width);
-            faceRect.top = (int) (faceDetectionFrameData.facesArr[i].faceRect[1] * height);
-            faceRect.right = (int) (faceDetectionFrameData.facesArr[i].faceRect[2] * width);
-            faceRect.bottom = (int) (faceDetectionFrameData.facesArr[i].faceRect[3] * height);
-            Log.e("xie", "faceRect.left:" + faceRect.left + " - top:"
-                    + faceRect.top + " - right:" + faceRect.right + " - right:" + faceRect.bottom);
-            for (int j = 0; j < faceDetectionFrameData.facesArr[i].faceLandmarksNum; j++) {
-                float pointx = (faceDetectionFrameData.facesArr[i].faceLandmarks[j * 2] * width);
-                float pointy = (faceDetectionFrameData.facesArr[i].faceLandmarks[j * 2 + 1] * height);
-            }
-            Log.e("xie", "faceLandmarksNum:" + faceDetectionFrameData.facesArr[i].faceLandmarksNum);
+        if(inputImage.mode_fmt == VNN.VNN_MODE_FMT.VNN_MODE_FMT_VIDEO) {
+            VNN.processFaceResultRotate(mVnnID, faceDetectionFrameData, 180);
         }
+//        Log.e("xie", "detect ret:" + ret + " - num:" + faceDetectionFrameData.facesNum);
+        // drawFaceKeyPoints(canvas);
+//        for (int i = 0; i < faceDetectionFrameData.facesNum; i++) {
+//            Rect faceRect = new Rect();
+//            faceRect.left = (int) (faceDetectionFrameData.facesArr[i].faceRect[0] * width);
+//            faceRect.top = (int) (faceDetectionFrameData.facesArr[i].faceRect[1] * height);
+//            faceRect.right = (int) (faceDetectionFrameData.facesArr[i].faceRect[2] * width);
+//            faceRect.bottom = (int) (faceDetectionFrameData.facesArr[i].faceRect[3] * height);
+//            Log.e("xie", "faceDetectionFrameData.facesArr[i].faceLandmarksNum:" +
+//                    faceDetectionFrameData.facesArr[i].faceLandmarksNum); // faceLandmarksNum:278
+//            Log.e("xie", "faceDetectionFrameData.facesArr[i].faceLandmarks.length:" +
+//                    faceDetectionFrameData.facesArr[i].faceLandmarks.length); // faceLandmarksNum:556
+//            for (int j = 0; j < faceDetectionFrameData.facesArr[i].faceLandmarksNum; j++) {
+//                float pointx = (faceDetectionFrameData.facesArr[i].faceLandmarks[j * 2] * width);
+//                float pointy = (faceDetectionFrameData.facesArr[i].faceLandmarks[j * 2 + 1] * height);
+//                // canvas.drawCircle(pointx, pointy, strokeWidth, mPaint);
+//            }
+//            Log.e("xie", "faceLandmarksNum:" + faceDetectionFrameData.facesArr[i].faceLandmarksNum);
+//        }
+//        FaceResultIns.getInstance().faceDetectionFrameData = faceDetectionFrameData;
+        FaceResultIns.getInstance().setData(faceDetectionFrameData);
     }
 
     public void destroyVNN(int effectMode) {

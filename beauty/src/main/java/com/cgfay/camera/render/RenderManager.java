@@ -323,9 +323,9 @@ public final class RenderManager {
      */
     public void drawFacePoint(int mCurrentTexture) {
         if (mFilterArrays.get(RenderIndex.FacePointIndex) != null) {
-            if (mCameraParam.drawFacePoints && LandmarkEngine.getInstance().hasFace()) {
+//            if (mCameraParam.drawFacePoints && LandmarkEngine.getInstance().hasFace()) {
                 mFilterArrays.get(RenderIndex.FacePointIndex).drawFrame(mCurrentTexture, mDisplayVertexBuffer, mDisplayTextureBuffer);
-            }
+//            }
         }
     }
 

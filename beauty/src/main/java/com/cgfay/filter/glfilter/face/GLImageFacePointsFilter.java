@@ -3,12 +3,16 @@ package com.cgfay.filter.glfilter.face;
 import android.content.Context;
 import android.opengl.GLES30;
 import android.text.TextUtils;
+import android.util.Log;
 import android.util.SparseArray;
 
+import com.cgfay.facedetect.FaceDetectMan;
+import com.cgfay.facedetect.FaceResultIns;
 import com.cgfay.filter.glfilter.base.GLImageFilter;
 import com.cgfay.filter.glfilter.utils.OpenGLUtils;
 import com.cgfay.landmark.LandmarkEngine;
 import com.cgfay.landmark.OneFace;
+import com.duowan.vnnlib.VNN;
 
 import java.nio.FloatBuffer;
 
@@ -33,10 +37,11 @@ public class GLImageFacePointsFilter extends GLImageFilter {
             "}";
 
     // 关键点滤镜
-    private final float color[] = { 1.0f, 0.0f, 0.0f, 1.0f };
+    private final float color[] = {1.0f, 0.0f, 0.0f, 1.0f};
 
     private int mColorHandle;
-    private int mPointCount = 114;
+    private int mPointCount = 278;
+//    private int mPointCount = 3;
     private float[] mPoints;
     private FloatBuffer mPointVertexBuffer;
 
@@ -76,11 +81,14 @@ public class GLImageFacePointsFilter extends GLImageFilter {
     @Override
     public boolean drawFrame(int textureId, FloatBuffer vertexBuffer, FloatBuffer textureBuffer) {
         // 没有初始化、滤镜不可用时直接返回
+//        Log.e("xie", "filter : mDisplayWidth :" + mDisplayWidth
+//                + " - mDisplayHeight:" + mDisplayHeight); // 1080 2030
         if (!mIsInitialized || !mFilterEnable) {
             return false;
         }
         // 设置视口大小
         GLES30.glViewport(0, 0, mDisplayWidth, mDisplayHeight);
+//        GLES30.glViewport(0, 0, 480, 640);
         // 使用当前的program
         GLES30.glUseProgram(mProgramHandle);
         // 运行延时任务
@@ -92,20 +100,26 @@ public class GLImageFacePointsFilter extends GLImageFilter {
         onDrawFrameBegin();
         // 逐个顶点绘制出来
         synchronized (this) {
-            if (LandmarkEngine.getInstance().getFaceSize() > 0) {
-                SparseArray<OneFace> faceArrays = LandmarkEngine.getInstance().getFaceArrays();
-                for (int i = 0; i < faceArrays.size(); i++) {
-                    if (faceArrays.get(i).vertexPoints != null) {
-                        LandmarkEngine.getInstance().calculateExtraFacePoints(mPoints, i);
-                        mPointVertexBuffer.clear();
-                        mPointVertexBuffer.put(mPoints, 0, mPoints.length);
-                        mPointVertexBuffer.position(0);
-                        GLES30.glVertexAttribPointer(mPositionHandle, 2,
-                                GLES30.GL_FLOAT, false, 8, mPointVertexBuffer);
-                        GLES30.glDrawArrays(GLES30.GL_POINTS, 0, mPointCount);
-                    }
-                }
-            }
+//            if (LandmarkEngine.getInstance().getFaceSize() > 0) {
+//                SparseArray<OneFace> faceArrays = LandmarkEngine.getInstance().getFaceArrays();
+//            VNN.VNN_FaceFrameDataArr faceDetectionFrameData = FaceResultIns.getInstance().faceDetectionFrameData;
+//            if (faceDetectionFrameData != null && faceDetectionFrameData.facesNum > 0) {
+//                SparseArray<OneFace> faceArrays = LandmarkEngine.getInstance().getFaceArrays();
+//                for (int i = 0; i < faceDetectionFrameData.facesNum; i++) {
+//                    if (faceDetectionFrameData.facesArr[i].faceLandmarksNum > 0) {
+//                        LandmarkEngine.getInstance().calculateExtraFacePoints(mPoints, i);
+//            float va[] = {-0.9f, -0.9f, 0.1f, 0.5f, 0.9f, 0.9f}; // 从左下角开始绘制, 绘制范围 -1 - 1
+            mPointVertexBuffer.clear();
+            mPointVertexBuffer.put(FaceResultIns.getInstance().faceLandmarks,
+                    0, FaceResultIns.getInstance().faceLandmarks.length);
+//            mPointVertexBuffer.put(va, 0, va.length);
+            mPointVertexBuffer.position(0);
+            GLES30.glVertexAttribPointer(mPositionHandle, 2,
+                    GLES30.GL_FLOAT, false, 8, mPointVertexBuffer);
+            GLES30.glDrawArrays(GLES30.GL_POINTS, 0, mPointCount);
+//                    }
+//                }
+//            }
         }
         onDrawFrameAfter();
         GLES30.glDisableVertexAttribArray(mPositionHandle);
@@ -114,6 +128,7 @@ public class GLImageFacePointsFilter extends GLImageFilter {
 
     /**
      * 备注：用于调试使用，禁用FBO，直接绘制
+     *
      * @param textureId
      * @param vertexBuffer
      * @param textureBuffer

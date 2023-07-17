@@ -24,6 +24,7 @@ import com.cgfay.camera.listener.OnFpsListener;
 import com.cgfay.camera.listener.OnPreviewCaptureListener;
 import com.cgfay.camera.render.CameraRenderer;
 import com.cgfay.camera.utils.PathConstraints;
+import com.cgfay.facedetect.FaceDetectMan;
 import com.cgfay.facedetect.engine.FaceTracker;
 import com.cgfay.facedetect.listener.FaceTrackerCallback;
 import com.cgfay.filter.glfilter.color.bean.DynamicColor;
@@ -107,6 +108,7 @@ public class CameraPreviewPresenter extends PreviewPresenter<CameraPreviewFragme
 
     // 渲染器
     private final CameraRenderer mCameraRenderer;
+    private FaceDetectMan mFaceDetectMan;
 
     public CameraPreviewPresenter(CameraPreviewFragment target) {
         super(target);
@@ -485,6 +487,7 @@ public class CameraPreviewPresenter extends PreviewPresenter<CameraPreviewFragme
                 "orientation - " + mCameraController.getOrientation()
                 + "width - " + mCameraController.getPreviewWidth()
                 + ", height - " + mCameraController.getPreviewHeight());
+        mFaceDetectMan = new FaceDetectMan(mActivity);
         FaceTracker.getInstance()
                 .setBackCamera(!mCameraController.isFront())
                 .prepareFaceTracker(mActivity,
@@ -508,6 +511,8 @@ public class CameraPreviewPresenter extends PreviewPresenter<CameraPreviewFragme
         FaceTracker.getInstance()
                 .trackFace(data, mCameraController.getPreviewWidth(),
                         mCameraController.getPreviewHeight());
+        mFaceDetectMan.detect(data, mCameraController.getPreviewWidth(),
+                mCameraController.getPreviewHeight());
     }
 
     // ---------------------------------- 人脸检测完成回调 ------------------------------------------
