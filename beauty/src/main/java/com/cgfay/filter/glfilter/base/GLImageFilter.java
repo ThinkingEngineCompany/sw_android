@@ -247,6 +247,7 @@ public class GLImageFilter {
         GLES30.glActiveTexture(GLES30.GL_TEXTURE0);
         GLES30.glBindTexture(getTextureType(), textureId);
         GLES30.glUniform1i(mInputTextureHandle, 0);
+        onDrawFrameBegin1(textureId);
         onDrawFrameBegin();
         onDrawFrame();
         onDrawFrameAfter();
@@ -254,6 +255,10 @@ public class GLImageFilter {
         GLES30.glDisableVertexAttribArray(mPositionHandle);
         GLES30.glDisableVertexAttribArray(mTextureCoordinateHandle);
         GLES30.glBindTexture(getTextureType(), 0);
+
+    }
+
+    protected void onDrawFrameBegin1(int textureId){
 
     }
 

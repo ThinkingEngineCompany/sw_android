@@ -74,9 +74,6 @@ public class GLFaceDetectFilter extends GLImageFilter {
         buffer.rewind();
         bitmap.copyPixelsFromBuffer(buffer);
 
-
-        save(bitmap);
-
         CameraRenderer.mFaceDetectMan.detect(bitmap);
         GLES30.glBindFramebuffer(GLES30.GL_FRAMEBUFFER, 0);
         GLES30.glDeleteRenderbuffers(1, renderbuffer, 0);
@@ -84,37 +81,5 @@ public class GLFaceDetectFilter extends GLImageFilter {
 
         return bitmap;
     }
-    public static boolean isSaved = false;
-
-    private void save(Bitmap bitmap) {
-
-        if(isSaved){
-            return;
-        }
-        isSaved = true;
-        // 创建一个输出流，用于将位图保存到文件中
-        FileOutputStream outputStream = null;
-        try {
-            String sdcard = FaceDetectMan.scontext.getExternalFilesDir(null).getAbsolutePath() + "/vnn_models";
-            outputStream = new FileOutputStream( sdcard+ "/my_bitmap7.jpg");
-            // 将位图压缩为 JPEG 格式，并将其保存到输出流中
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream);
-
-            // 刷新输出流
-            outputStream.flush();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            // 关闭输出流
-            if (outputStream != null) {
-                try {
-                    outputStream.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-    }
-
 
 }
