@@ -62,7 +62,7 @@ public class CameraRenderer extends Thread {
     private final FrameRateMeter mFrameRateMeter;
     // 预览参数
     private CameraParam mCameraParam;
-    private FaceDetectMan mFaceDetectMan;
+    public static FaceDetectMan mFaceDetectMan;
 
     // Presenter
     private final WeakReference<PreviewPresenter> mWeakPresenter;
@@ -83,9 +83,9 @@ public class CameraRenderer extends Thread {
      * 初始化渲染器
      */
     public void initRenderer() {
-//        if (mWeakPresenter.get() != null) {
-//            mFaceDetectMan = new FaceDetectMan(mWeakPresenter.get().getContext());
-//        }
+        if (mWeakPresenter.get() != null) {
+            mFaceDetectMan = new FaceDetectMan(mWeakPresenter.get().getContext());
+        }
         synchronized (this) {
             if (!mThreadStarted) {
                 start();
@@ -376,8 +376,7 @@ public class CameraRenderer extends Thread {
             return;
         }
         // 将数据传递给人脸库
-
-        //mFaceDetectMan.detect(mInputTexture);
+//        mFaceDetectMan.detect(mInputTexture);
         // 绘制渲染
         mCurrentTexture = mRenderManager.drawFrame(mInputTexture, mMatrix);
 

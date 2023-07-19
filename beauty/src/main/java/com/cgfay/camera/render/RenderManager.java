@@ -7,6 +7,7 @@ import android.view.MotionEvent;
 
 import com.badlogic.gdx.math.Vector3;
 import com.cgfay.camera.camera.CameraParam;
+import com.cgfay.facedetect.GLFaceDetectFilter;
 import com.cgfay.filter.glfilter.base.GLImageDepthBlurFilter;
 import com.cgfay.filter.glfilter.base.GLImageFilter;
 import com.cgfay.filter.glfilter.base.GLImageOESInputFilter;
@@ -262,8 +263,14 @@ public final class RenderManager {
         if (mFilterArrays.get(RenderIndex.CameraIndex) instanceof GLImageOESInputFilter) {
             ((GLImageOESInputFilter)mFilterArrays.get(RenderIndex.CameraIndex)).setTextureTransformMatrix(mMatrix);
         }
+
+
         currentTexture = mFilterArrays.get(RenderIndex.CameraIndex)
                 .drawFrameBuffer(currentTexture, mVertexBuffer, mTextureBuffer);
+        Log.e("xie", "faceDetect:");
+        GLFaceDetectFilter glImageFilter = new GLFaceDetectFilter(mContext);
+        glImageFilter.drawFrameBuffer(currentTexture, mVertexBuffer, mTextureBuffer);
+
         // 如果处于对比状态，不做处理
         if (!mCameraParam.showCompare) {
             // 美颜滤镜

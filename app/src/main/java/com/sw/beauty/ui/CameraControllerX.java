@@ -94,7 +94,7 @@ public class CameraControllerX implements ICameraController, Camera.PreviewCallb
         // 创建一个新的SurfaceTexture并从解绑GL上下文
         SurfaceTexture surfaceTexture = new SurfaceTexture(0);
         surfaceTexture.detachFromGLContext();
-        surfaceTexture.setDefaultBufferSize(480, 640);
+        surfaceTexture.setDefaultBufferSize(1080, 2400);
         if (Build.VERSION.SDK_INT >= 21) {
             if (mOutputThread != null) {
                 mOutputThread.quit();
@@ -163,6 +163,7 @@ public class CameraControllerX implements ICameraController, Camera.PreviewCallb
         }
     }
 
+    // not work
     @Override
     public void onPreviewFrame(byte[] data, Camera camera) {
         if (mPreviewCallback != null) {

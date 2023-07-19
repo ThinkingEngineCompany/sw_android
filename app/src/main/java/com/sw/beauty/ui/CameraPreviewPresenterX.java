@@ -362,7 +362,8 @@ public class CameraPreviewPresenterX extends PreviewPresenter<CameraPreviewFragm
             height = mCameraController.getPreviewHeight();
         }
         mVideoParams.setVideoSize(width, height);
-        mCameraRenderer.setTextureSize(width, height);
+//        mCameraRenderer.setTextureSize(width, height);
+        mCameraRenderer.setTextureSize(1080, 2400);
     }
 
     /**
