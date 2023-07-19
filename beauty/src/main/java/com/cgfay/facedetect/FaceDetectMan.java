@@ -45,100 +45,20 @@ public class FaceDetectMan {
         String[] modelPath = {
                 sdcard + "/vnn_face278_data/face_mobile[1.0.0].vnnmodel"
         };
-        Log.e("xie2", "modelPath:" + modelPath[0]);
         //VNN.javaTest();
         mVnnID = VNN.createFace(modelPath); // 1
 //        Log.e("xie1", "mVnnID:" + mVnnID);
     }
 
-//    public void detect(ByteBuffer pixels) {
-    public void detect(Bitmap mBitmap) {
-//        Log.e("xie", "detect..:" + mInputTexture);
-//        GLES30.glActiveTexture(GLES30.GL_TEXTURE0);
-//        GLES30.glBindTexture(GLES30.GL_TEXTURE_2D, mInputTexture);
-//        int error;
-//        while ((error = GLES30.glGetError()) != GLES30.GL_NO_ERROR) {
-//            Log.e("xie", "GL OpenGL error 1: " + GLU.gluErrorString(error));
-//        }
-//        Log.e("xie", "GL error:" + error);
-//
-//        int[] currentTexture = new int[1];
-//        GLES30.glGetIntegerv(GLES30.GL_TEXTURE_BINDING_2D, currentTexture, 0);
-//
-//        Log.e("xie", "GL mInputTexture:" + mInputTexture);
-//        Log.e("xie", "GL currentTexture[0]:" + currentTexture[0]);
-//        if (currentTexture[0] != mInputTexture) {
-//            Log.e("xie", "Texture is not bound:");
-//        }
-//
-//        int[] framebufferIds = new int[1];
-//        GLES30.glGenFramebuffers(1, framebufferIds, 0);
-//        GLES30.glBindFramebuffer(GLES30.GL_FRAMEBUFFER, framebufferIds[0]);
-//        // 绑定纹理到帧缓冲区
-//        GLES30.glFramebufferTexture2D(GLES30.GL_FRAMEBUFFER, GLES30.GL_COLOR_ATTACHMENT0,
-//                GLES30.GL_TEXTURE_2D, mInputTexture, 0);
-//        while ((error = GLES30.glGetError()) != GLES30.GL_NO_ERROR) {
-//            Log.e("xie", "GL Framebuffer error 1: " + GLU.gluErrorString(error));
-//        }
-//
-//        ByteBuffer pixels = ByteBuffer.allocateDirect(480 * 640 * 4);
-//        pixels.order(ByteOrder.nativeOrder());
-//        pixels.position(0);
-//        GLES30.glReadPixels(0, 0, 480, 640, GLES30.GL_RGBA, GL_UNSIGNED_BYTE, pixels);
-//        while ((error = GLES30.glGetError()) != GLES30.GL_NO_ERROR) {
-//            Log.e("xie", "OpenGL error 2: " + GLU.gluErrorString(error));
-//        }
-
-//        GLES30.glFramebufferTexture2D(GLES30.GL_FRAMEBUFFER, GLES30.GL_COLOR_ATTACHMENT0,
-//                GLES30.GL_TEXTURE_2D, 0, 0);
-//        GLES30.glBindFramebuffer(GLES30.GL_FRAMEBUFFER, 0);
-
-//        int status = GLES30.glCheckFramebufferStatus(GLES30.GL_FRAMEBUFFER);
-//        if (status != GLES30.GL_FRAMEBUFFER_COMPLETE) {
-//            Log.e("xie", "Framebuffer is not complete: " + status); // 36055
-//        } else {
-//            Log.e("xie", "Framebuffer is complete: " + status);
-//        }
-//        Log.e("xie", "buffer.position:" + pixels.position()); // 0
-//        Log.e("xie", "buffer.remaining 1:" + pixels.remaining()); // 1228800
-//
-//        byte[] bytes = new byte[pixels.remaining()]; // 创建一个与 buffer 中数据大小相同的 byte 数组
-//        pixels.rewind(); // 将 buffer 的位置重置为 0
-//        pixels.get(bytes); // 将 buffer 中的数据传输到 byte 数组中
-//        Log.e("xie", "bytes.length:" + bytes.length);
-//        Log.e("xie", "bytes:" + bytes[0] + " - " + bytes[1] + " - " + bytes[2] + " - " + bytes[3]);
-//        while ((error = GLES30.glGetError()) != GLES30.GL_NO_ERROR) {
-//            Log.e("xie","OpenGL error3: " + GLU.gluErrorString(error));
-//        }
-
-//        Log.e("xie", "bytes:" + bytes.length);
-//        int index = 0;
-//        while (bytes[index] == 0 && index < bytes.length - 4) {
-//            index++;
-//        }
-//        Log.e("xie", "content:" + index + "-" + bytes[index + 0] + "-" + bytes[index + 1]
-//                + "-" + bytes[index + 2] + "-" + bytes[index + 3]);
-
-//        VNN.VNN_Image inputImage = new VNN.VNN_Image();
-//        inputImage.width = 480;
-//        inputImage.height = 640;
-//        inputImage.data = bytes;
-//        inputImage.ori_fmt = VNN.VNN_OrientationFormat.VNN_ORIENT_FMT_FLIP_V
-//                | VNN.VNN_OrientationFormat.VNN_ORIENT_FMT_ROTATE_90R; // ---
-////        inputImage.pix_fmt = VNN.VNN_PixelFormat.VNN_PIX_FMT_YUV420P_888_SKIP1;
-//        inputImage.pix_fmt = VNN.VNN_PixelFormat.VNN_PIX_FMT_RGBA8888;
-//        inputImage.mode_fmt = VNN.VNN_MODE_FMT.VNN_MODE_FMT_VIDEO;
-
-
-        int mImageWidth = mBitmap.getWidth();
-        int mImageHeight = mBitmap.getHeight();
-        byte[] mImageData = getRGBAFromBitmap(mBitmap);
+    public void detect(ByteBuffer pixels) {
+        byte[] bytes = new byte[pixels.remaining()]; // 创建一个与 buffer 中数据大小相同的 byte 数组
+        pixels.rewind(); // 将 buffer 的位置重置为 0
+        pixels.get(bytes); // 将 buffer 中的数据传输到 byte 数组中
         VNN.VNN_Image inputImage = new VNN.VNN_Image();
-        inputImage.width = mImageWidth;
-        inputImage.height = mImageHeight;
-        inputImage.data = mImageData;
-        inputImage.ori_fmt = VNN.VNN_OrientationFormat.VNN_ORIENT_FMT_ROTATE_180; // ---
-//        inputImage.ori_fmt = VNN.VNN_OrientationFormat.VNN_ORIENT_FMT_DEFAULT; // ---
+        inputImage.width = 1080;
+        inputImage.height = 2400;
+        inputImage.data = bytes;
+        inputImage.ori_fmt = VNN.VNN_OrientationFormat.VNN_ORIENT_FMT_ROTATE_180;
         inputImage.pix_fmt = VNN.VNN_PixelFormat.VNN_PIX_FMT_RGBA8888;
         inputImage.mode_fmt = VNN.VNN_MODE_FMT.VNN_MODE_FMT_VIDEO;
 

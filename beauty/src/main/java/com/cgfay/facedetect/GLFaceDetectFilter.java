@@ -28,29 +28,15 @@ import java.nio.FloatBuffer;
 
 public class GLFaceDetectFilter extends GLImageFilter {
 
-    Handler handler = new Handler(Looper.getMainLooper());
-    public static ImageView mIvStickers;
     public GLFaceDetectFilter(Context context) {
         super(context);
         initFrameBuffer(1080, 2400);
     }
 
-    public GLFaceDetectFilter(Context context, String vertexShader, String fragmentShader) {
-        super(context, vertexShader, fragmentShader);
-    }
-
     public void onDrawFrameBegin1(int textureId) {
-        Bitmap bitmap = loadBitmapFromTexture(textureId, 1080, 2400);
-        handler.post(new Runnable() {
-            @Override
-            public void run() {
-                if(mIvStickers!=null){
-                    mIvStickers.setImageBitmap(bitmap);
-                }
-            }
-        });
-    }
-    private Bitmap loadBitmapFromTexture(int textureId, int width, int height) {
+        // load data from textureId
+        int width = 1080;
+        int height = 2400;
         int[] framebuffer = new int[1];
         GLES30.glGenFramebuffers(1, framebuffer, 0);
         GLES30.glBindFramebuffer(GLES30.GL_FRAMEBUFFER, framebuffer[0]);
@@ -67,19 +53,14 @@ public class GLFaceDetectFilter extends GLImageFilter {
         buffer.order(ByteOrder.LITTLE_ENDIAN);
         GLES30.glReadPixels(0, 0, width, height, GLES30.GL_RGBA, GLES30.GL_UNSIGNED_BYTE, buffer);
 
-        Log.e("xie", "bitmap position:" + buffer.position()); // 0
-        Log.e("xie", "bitmap remaining:" + buffer.remaining()); // 1228800
-
-        Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
-        buffer.rewind();
-        bitmap.copyPixelsFromBuffer(buffer);
-
-        CameraRenderer.mFaceDetectMan.detect(bitmap);
+//        Log.e("xie", "bitmap position:" + buffer.position()); // 0
+//        Log.e("xie", "bitmap remaining:" + buffer.remaining()); // 1228800
+        if (CameraRenderer.mFaceDetectMan != null) {
+            CameraRenderer.mFaceDetectMan.detect(buffer);
+        }
         GLES30.glBindFramebuffer(GLES30.GL_FRAMEBUFFER, 0);
         GLES30.glDeleteRenderbuffers(1, renderbuffer, 0);
         GLES30.glDeleteFramebuffers(1, framebuffer, 0);
-
-        return bitmap;
     }
 
 }
