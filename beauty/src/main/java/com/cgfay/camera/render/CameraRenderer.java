@@ -14,7 +14,6 @@ import androidx.annotation.Nullable;
 
 import com.cgfay.camera.camera.CameraParam;
 import com.cgfay.camera.presenter.PreviewPresenter;
-import com.cgfay.facedetect.FaceDetectMan;
 import com.cgfay.filter.gles.EglCore;
 import com.cgfay.filter.gles.WindowSurface;
 import com.cgfay.filter.glfilter.color.bean.DynamicColor;
@@ -22,7 +21,6 @@ import com.cgfay.filter.glfilter.makeup.bean.DynamicMakeup;
 import com.cgfay.filter.glfilter.stickers.StaticStickerNormalFilter;
 import com.cgfay.filter.glfilter.stickers.bean.DynamicSticker;
 import com.cgfay.filter.glfilter.utils.OpenGLUtils;
-import com.duowan.vnnlib.VNN;
 
 import java.lang.ref.WeakReference;
 
@@ -62,7 +60,6 @@ public class CameraRenderer extends Thread {
     private final FrameRateMeter mFrameRateMeter;
     // 预览参数
     private CameraParam mCameraParam;
-    public static FaceDetectMan mFaceDetectMan;
 
     // Presenter
     private final WeakReference<PreviewPresenter> mWeakPresenter;
@@ -83,9 +80,6 @@ public class CameraRenderer extends Thread {
      * 初始化渲染器
      */
     public void initRenderer() {
-        if (mWeakPresenter.get() != null) {
-            mFaceDetectMan = new FaceDetectMan(mWeakPresenter.get().getContext());
-        }
         synchronized (this) {
             if (!mThreadStarted) {
                 start();

@@ -132,6 +132,7 @@ public final class RenderManager {
         releaseFilters();
         // 相机输入滤镜
         mFilterArrays.put(RenderIndex.CameraIndex, new GLImageOESInputFilter(context));
+        mFilterArrays.put(RenderIndex.FaceDetectIndex, new GLFaceDetectFilter(context));
         // 美颜滤镜
         mFilterArrays.put(RenderIndex.BeautyIndex, new GLImageBeautyFilter(context));
         // 彩妆滤镜
@@ -267,10 +268,7 @@ public final class RenderManager {
 
         currentTexture = mFilterArrays.get(RenderIndex.CameraIndex)
                 .drawFrameBuffer(currentTexture, mVertexBuffer, mTextureBuffer);
-        Log.e("xie", "faceDetect:");
-        GLFaceDetectFilter glImageFilter = new GLFaceDetectFilter(mContext);
-        glImageFilter.drawFrameBuffer(currentTexture, mVertexBuffer, mTextureBuffer);
-
+        mFilterArrays.get(RenderIndex.FaceDetectIndex).drawFrameBuffer(currentTexture, mVertexBuffer, mTextureBuffer);
         // 如果处于对比状态，不做处理
         if (!mCameraParam.showCompare) {
             // 美颜滤镜

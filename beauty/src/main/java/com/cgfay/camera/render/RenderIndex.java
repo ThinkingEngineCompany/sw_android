@@ -5,14 +5,15 @@ package com.cgfay.camera.render;
  */
 public final class RenderIndex {
     public static final int CameraIndex = 0;        // 相机输入索引
-    public static final int BeautyIndex = 1;        // 美颜索引
-    public static final int MakeupIndex = 2;        // 彩妆索引
-    public static final int FaceAdjustIndex = 3;    // 美型索引
-    public static final int FilterIndex = 4;        // 滤镜索引
-    public static final int ResourceIndex = 5;      // 资源索引
-    public static final int DepthBlurIndex = 6;     // 景深索引
-    public static final int VignetteIndex = 7;      // 暗角索引
-    public static final int DisplayIndex = 8;       // 显示索引
-    public static final int FacePointIndex = 9;     // 人脸关键点索引
-    public static final int NumberIndex = 10;       // 索引个数
+    public static final int FaceDetectIndex = 1;    // 人脸关键点检测索引
+    public static final int BeautyIndex = 2;        // 美颜索引
+    public static final int MakeupIndex = 3;        // 彩妆索引
+    public static final int FaceAdjustIndex = 4;    // 美型索引
+    public static final int FilterIndex = 5;        // 滤镜索引
+    public static final int ResourceIndex = 6;      // 资源索引
+    public static final int DepthBlurIndex = 7;     // 景深索引
+    public static final int VignetteIndex = 8;      // 暗角索引
+    public static final int DisplayIndex = 9;       // 显示索引
+    public static final int FacePointIndex = 10;     // 人脸关键点索引
+    public static final int NumberIndex = 11;       // 索引个数
 }
