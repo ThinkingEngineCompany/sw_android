@@ -3,16 +3,12 @@ package com.cgfay.filter.glfilter.face;
 import android.content.Context;
 import android.opengl.GLES30;
 import android.text.TextUtils;
-import android.util.Log;
 import android.util.SparseArray;
 
-import com.cgfay.facedetect.FaceDetectMan;
-import com.cgfay.facedetect.FaceResultIns;
 import com.cgfay.filter.glfilter.base.GLImageFilter;
 import com.cgfay.filter.glfilter.utils.OpenGLUtils;
 import com.cgfay.landmark.LandmarkEngine;
 import com.cgfay.landmark.OneFace;
-import com.duowan.vnnlib.VNN;
 
 import java.nio.FloatBuffer;
 
@@ -40,8 +36,9 @@ public class GLImageFacePointsFilter extends GLImageFilter {
     private final float color[] = {1.0f, 0.0f, 0.0f, 1.0f};
 
     private int mColorHandle;
-    private int mPointCount = 278;
-//    private int mPointCount = 3;
+    //    private int mPointCount = 278; //如果数量比提供的多,会在(0, 0)屏幕中间出现红点
+    private int mPointCount = 36;
+    //    private int mPointCount = 3;
     private float[] mPoints;
     private FloatBuffer mPointVertexBuffer;
 
@@ -100,30 +97,42 @@ public class GLImageFacePointsFilter extends GLImageFilter {
         onDrawFrameBegin();
         // 逐个顶点绘制出来
         synchronized (this) {
-//            if (LandmarkEngine.getInstance().getFaceSize() > 0) {
-//                SparseArray<OneFace> faceArrays = LandmarkEngine.getInstance().getFaceArrays();
-//            VNN.VNN_FaceFrameDataArr faceDetectionFrameData = FaceResultIns.getInstance().faceDetectionFrameData;
-//            if (faceDetectionFrameData != null && faceDetectionFrameData.facesNum > 0) {
-//                SparseArray<OneFace> faceArrays = LandmarkEngine.getInstance().getFaceArrays();
-//                for (int i = 0; i < faceDetectionFrameData.facesNum; i++) {
-//                    if (faceDetectionFrameData.facesArr[i].faceLandmarksNum > 0) {
-//                        LandmarkEngine.getInstance().calculateExtraFacePoints(mPoints, i);
+            if (LandmarkEngine.getInstance().getFaceSize() > 0) {
+                SparseArray<OneFace> faceArrays = LandmarkEngine.getInstance().getFaceArrays();
 //            float va[] = {-0.9f, -0.9f, 0.1f, 0.5f, 0.9f, 0.9f}; // 从左下角开始绘制, 绘制范围 -1 - 1
-            mPointVertexBuffer.clear();
-            mPointVertexBuffer.put(FaceResultIns.getInstance().faceLandmarks,
-                    0, FaceResultIns.getInstance().faceLandmarks.length);
-//            mPointVertexBuffer.put(va, 0, va.length);
-            mPointVertexBuffer.position(0);
-            GLES30.glVertexAttribPointer(mPositionHandle, 2,
-                    GLES30.GL_FLOAT, false, 8, mPointVertexBuffer);
-            GLES30.glDrawArrays(GLES30.GL_POINTS, 0, mPointCount);
-//                    }
-//                }
-//            }
+                OneFace oneFace = faceArrays.get(0);
+                mPointVertexBuffer.clear();
+                putLimitedData(oneFace);
+                mPointVertexBuffer.position(0);
+                GLES30.glVertexAttribPointer(mPositionHandle, 2,
+                        GLES30.GL_FLOAT, false, 8, mPointVertexBuffer);
+                GLES30.glDrawArrays(GLES30.GL_POINTS, 0, mPointCount);
+            }
         }
         onDrawFrameAfter();
         GLES30.glDisableVertexAttribArray(mPositionHandle);
         return true;
+    }
+
+    private void putLimitedData(OneFace oneFace) {
+        // 228个点
+        float[] point = new float[32 * 2 + 2 * 2 + 2*2];
+        for (int i = 0; i < 32 * 2; i++) {
+            point[i] = oneFace.vertexPoints[i];
+        }
+        point[32 * 2] = oneFace.vertexPoints[44 * 2];
+        point[32 * 2 + 1] = oneFace.vertexPoints[44 * 2 + 1];
+        point[33 * 2] = oneFace.vertexPoints[46 * 2];
+        point[33 * 2 + 1] = oneFace.vertexPoints[46 * 2 + 1];
+
+        point[34 * 2] = oneFace.vertexPoints[74 * 2];
+        point[34 * 2 + 1] = oneFace.vertexPoints[74 * 2 + 1];
+        point[35 * 2] = oneFace.vertexPoints[77 * 2];
+        point[35 * 2 + 1] = oneFace.vertexPoints[77 * 2 + 1];
+
+        //mPointVertexBuffer.put(oneFace.vertexPoints, 0, oneFace.vertexPoints.length);
+        mPointVertexBuffer.put(point, 0, point.length);
+
     }
 
     /**

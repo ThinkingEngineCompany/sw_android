@@ -132,6 +132,7 @@ public final class RenderManager {
         releaseFilters();
         // 相机输入滤镜
         mFilterArrays.put(RenderIndex.CameraIndex, new GLImageOESInputFilter(context));
+        // 人脸关键点检测滤镜
         mFilterArrays.put(RenderIndex.FaceDetectIndex, new GLFaceDetectFilter(context));
         // 美颜滤镜
         mFilterArrays.put(RenderIndex.BeautyIndex, new GLImageBeautyFilter(context));
