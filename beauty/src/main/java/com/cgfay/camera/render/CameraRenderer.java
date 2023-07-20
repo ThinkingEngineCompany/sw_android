@@ -66,12 +66,12 @@ public class CameraRenderer extends Thread {
 
     private volatile boolean mThreadStarted;
 
-    public CameraRenderer(@NonNull PreviewPresenter presenter) {
+    public CameraRenderer(@NonNull PreviewPresenter presenter, boolean isFromCam) {
         super(TAG);
         mPriority = Process.THREAD_PRIORITY_DISPLAY;
         mWeakPresenter = new WeakReference<>(presenter);
         mCameraParam = CameraParam.getInstance();
-        mRenderManager = new RenderManager();
+        mRenderManager = new RenderManager(isFromCam);
         mFrameRateMeter = new FrameRateMeter();
         mThreadStarted = false;
     }

@@ -61,7 +61,7 @@ import java.util.List;
  */
 public class CameraPreviewPresenter extends PreviewPresenter<CameraPreviewFragment>
         implements PreviewCallback, FaceTrackerCallback, OnCaptureListener, OnFpsListener,
-        OnSurfaceTextureListener, OnFrameAvailableListener, OnRecordStateListener {
+        OnSurfaceTextureListener, OnFrameAvailableListener, OnRecordStateListener, FaceDetectMan.TrackCallback {
 
     private static final String TAG = "CameraPreviewPresenter";
 
@@ -114,7 +114,7 @@ public class CameraPreviewPresenter extends PreviewPresenter<CameraPreviewFragme
         super(target);
         mCameraParam = CameraParam.getInstance();
 
-        mCameraRenderer = new CameraRenderer(this);
+        mCameraRenderer = new CameraRenderer(this, true);
 
         // 视频录制器
         mVideoParams = new VideoParams();
@@ -512,14 +512,14 @@ public class CameraPreviewPresenter extends PreviewPresenter<CameraPreviewFragme
                 .trackFace(data, mCameraController.getPreviewWidth(),
                         mCameraController.getPreviewHeight());
         mFaceDetectMan.detect(data, mCameraController.getPreviewWidth(),
-                mCameraController.getPreviewHeight());
+                mCameraController.getPreviewHeight(), this);
     }
 
     // ---------------------------------- 人脸检测完成回调 ------------------------------------------
     @Override
     public void onTrackingFinish() {
         Log.d(TAG, "onTrackingFinish: ");
-        mCameraRenderer.requestRender();
+//        mCameraRenderer.requestRender();
     }
 
     // ------------------------------ SurfaceTexture帧可用回调 --------------------------------------
@@ -675,5 +675,10 @@ public class CameraPreviewPresenter extends PreviewPresenter<CameraPreviewFragme
         if (getTarget() != null) {
             getTarget().showFps(fps);
         }
+    }
+
+    @Override
+    public void onTrackEnd() {
+        mCameraRenderer.requestRender();
     }
 }

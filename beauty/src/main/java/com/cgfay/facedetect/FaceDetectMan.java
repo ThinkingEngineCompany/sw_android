@@ -65,7 +65,7 @@ public class FaceDetectMan {
         detectInner(0, 0, inputImage);
     }
 
-    public void detect(byte[] data, int width, int height) {
+    public void detect(byte[] data, int width, int height, TrackCallback trackCallback) {
 
         VNN.VNN_Image inputImage = new VNN.VNN_Image();
         inputImage.width = width; // not use
@@ -78,6 +78,7 @@ public class FaceDetectMan {
         inputImage.mode_fmt = VNN.VNN_MODE_FMT.VNN_MODE_FMT_VIDEO;
 
         detectInner(width, height, inputImage);
+        trackCallback.onTrackEnd();
     }
 
     private void detectInner(int width, int height, VNN.VNN_Image inputImage) {
@@ -176,5 +177,9 @@ public class FaceDetectMan {
         }
 
         return rgbValues;
+    }
+
+    public interface TrackCallback{
+        void onTrackEnd();
     }
 }

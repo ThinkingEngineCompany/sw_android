@@ -12,6 +12,8 @@ import android.os.Handler;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.cgfay.camera.activity.CameraActivity;
+
 public class MainActivity extends AppCompatActivity {
 
     private static final int CAMERA_PERMISSION_REQUEST_CODE = 200;
@@ -27,12 +29,16 @@ public class MainActivity extends AppCompatActivity {
             new Handler().postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    startActivity(new Intent(MainActivity.this, PlayActivity.class));
+//                    startActivity(new Intent(MainActivity.this, PlayActivity.class));
+//                    startActivity(new Intent(MainActivity.this, MatAndBeautyActivity.class));
+                    startActivity(new Intent(MainActivity.this, CameraActivity.class));
                     finish();
                 }
             }, 500);
         } else {
-            startActivity(new Intent(this, PlayActivity.class));
+//            startActivity(new Intent(this, PlayActivity.class));
+//            startActivity(new Intent(this, MatAndBeautyActivity.class));
+            startActivity(new Intent(MainActivity.this, CameraActivity.class));
             finish();
         }
     }

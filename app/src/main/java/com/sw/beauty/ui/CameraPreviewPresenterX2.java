@@ -108,11 +108,12 @@ public class CameraPreviewPresenterX2 extends PreviewPresenter<BeautyModule>
     // 渲染器
     private final CameraRenderer mCameraRenderer;
 
+    // 带游戏场景
     public CameraPreviewPresenterX2(BeautyModule target) {
         super(target);
         mCameraParam = CameraParam.getInstance();
 
-        mCameraRenderer = new CameraRenderer(this);
+        mCameraRenderer = new CameraRenderer(this, false);
 
         // 视频录制器
         mVideoParams = new VideoParams();

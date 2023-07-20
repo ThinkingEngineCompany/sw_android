@@ -35,9 +35,10 @@ import java.nio.FloatBuffer;
  * 渲染管理器
  */
 public final class RenderManager {
-
-    public RenderManager() {
+    private boolean isFromCam;
+    public RenderManager(boolean isFromCam) {
         mCameraParam = CameraParam.getInstance();
+        this.isFromCam = isFromCam;
     }
 
     // 滤镜列表
@@ -266,10 +267,11 @@ public final class RenderManager {
             ((GLImageOESInputFilter)mFilterArrays.get(RenderIndex.CameraIndex)).setTextureTransformMatrix(mMatrix);
         }
 
-
         currentTexture = mFilterArrays.get(RenderIndex.CameraIndex)
                 .drawFrameBuffer(currentTexture, mVertexBuffer, mTextureBuffer);
-        mFilterArrays.get(RenderIndex.FaceDetectIndex).drawFrameBuffer(currentTexture, mVertexBuffer, mTextureBuffer);
+        if(!isFromCam) {
+            mFilterArrays.get(RenderIndex.FaceDetectIndex).drawFrameBuffer(currentTexture, mVertexBuffer, mTextureBuffer);
+        }
         // 如果处于对比状态，不做处理
         if (!mCameraParam.showCompare) {
             // 美颜滤镜

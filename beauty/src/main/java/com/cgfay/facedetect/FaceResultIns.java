@@ -31,16 +31,16 @@ public class FaceResultIns {
                 // 坐标变换 0.1 -> 1- 0.1 | 0.9 -> 0.9 * 2 - 1
                 // Canvas - OpenGl
                 // 从相机获取数据
-//                for (int j = 0; j < faceDetectionFrameData.facesArr[0].faceLandmarksNum; j++) {
-//                    faceLandmarks[j * 2] = (1 - (faceDetectionFrameData.facesArr[0].faceLandmarks[j * 2])) * 2 - 1;
-//                    faceLandmarks[j * 2 + 1] = (faceDetectionFrameData.facesArr[0].faceLandmarks[j * 2 + 1] * 2 - 1);
-//                }
+                for (int j = 0; j < faceDetectionFrameData.facesArr[0].faceLandmarksNum; j++) {
+                    faceLandmarks[j * 2] = (1 - (faceDetectionFrameData.facesArr[0].faceLandmarks[j * 2])) * 2 - 1;
+                    faceLandmarks[j * 2 + 1] = (faceDetectionFrameData.facesArr[0].faceLandmarks[j * 2 + 1] * 2 - 1);
+                }
                 // 高度百分比
                 // 从 texture获取数据
-                for (int j = 0; j < faceDetectionFrameData.facesArr[0].faceLandmarksNum; j++) {
-                    faceLandmarks[j * 2] = (faceDetectionFrameData.facesArr[0].faceLandmarks[j * 2]) * 2 - 1;
-                    faceLandmarks[j * 2 + 1] = (faceDetectionFrameData.facesArr[0].faceLandmarks[j * 2 + 1] * 2 - 1) * 1.2f;
-                }
+//                for (int j = 0; j < faceDetectionFrameData.facesArr[0].faceLandmarksNum; j++) {
+//                    faceLandmarks[j * 2] = (faceDetectionFrameData.facesArr[0].faceLandmarks[j * 2]) * 2 - 1;
+//                    faceLandmarks[j * 2 + 1] = (faceDetectionFrameData.facesArr[0].faceLandmarks[j * 2 + 1] * 2 - 1) * 1.2f;
+//                }
                 // 索引转换
                 OneFace oneFace = new OneFace();
                 oneFace.vertexPoints = faceLandmarks;

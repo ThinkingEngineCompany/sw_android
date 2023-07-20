@@ -59,6 +59,7 @@ import java.util.List;
  * @author CainHuang
  * @date 2019/7/3
  */
+// 不带游戏场景
 public class CameraPreviewPresenterX extends PreviewPresenter<CameraPreviewFragmentX>
         implements PreviewCallback, FaceTrackerCallback, OnCaptureListener, OnFpsListener,
         OnSurfaceTextureListener, OnFrameAvailableListener, OnRecordStateListener {
@@ -113,7 +114,7 @@ public class CameraPreviewPresenterX extends PreviewPresenter<CameraPreviewFragm
         super(target);
         mCameraParam = CameraParam.getInstance();
 
-        mCameraRenderer = new CameraRenderer(this);
+        mCameraRenderer = new CameraRenderer(this, false);
 
         // 视频录制器
         mVideoParams = new VideoParams();
