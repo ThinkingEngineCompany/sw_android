@@ -5,19 +5,20 @@ uniform sampler2D inputTexture;
 // 图像笛卡尔坐标系的关键点，也就是纹理坐标乘以宽高得到
 uniform vec2 cartesianPoints[106];
 
-#define INDEX_FACE_LIFT     0   // 瘦脸
-#define INDEX_FACE_SHAVE    1   // 削脸
-#define INDEX_FACE_NARROW   2   // 小脸
-#define INDEX_CHIN          3   // 下巴
-#define INDEX_FOREHEAD      4   // 额头
-#define INDEX_EYE_ENLARGE   5   // 大眼
-#define INDEX_EYE_DISTANCE  6   // 眼距
-#define INDEX_EYE_CORNER    7   // 眼角
-#define INDEX_NOSE_THIN     8   // 瘦鼻
-#define INDEX_ALAE          9   // 鼻翼
-#define INDEX_PROBOSCIS    10   // 长鼻
-#define INDEX_MOUTH        11   // 嘴型
-#define INDEX_SIZE 12           // 索引大小
+#define INDEX_FACE_LIFT     0// 瘦脸
+#define INDEX_FACE_SHAVE    1// 削脸
+#define INDEX_FACE_NARROW   2// 小脸
+#define INDEX_CHIN          3// 下巴
+#define INDEX_FOREHEAD      4// 额头
+#define INDEX_EYE_ENLARGE   5// 大眼
+#define INDEX_EYE_DISTANCE  6// 眼距
+#define INDEX_EYE_CORNER    7// 眼角
+#define INDEX_NOSE_THIN     8// 瘦鼻
+#define INDEX_ALAE          9// 鼻翼
+#define INDEX_PROBOSCIS    10// 长鼻
+#define INDEX_MOUTH        11// 嘴型
+#define INDEX_EYE_HEIGHT   12// 眼高
+#define INDEX_SIZE 13// 索引大小
 
 // 美型程度参数列表
 uniform float reshapeIntensity[INDEX_SIZE];
@@ -40,6 +41,25 @@ vec2 curveWarp(vec2 textureCoord, vec2 originPosition, vec2 targetPosition, floa
 
     float infect = distance(textureCoord, originPosition)/radius;
 
+    infect = 1.0 - infect;
+    infect = clamp(infect, 0.0, 1.0);
+    offset = direction * infect;
+
+    result = textureCoord - offset;
+
+    return result;
+}
+
+// 曲线形变处理
+vec2 curveWarp2(vec2 textureCoord, vec2 originPosition, vec2 targetPosition, float radius)
+{
+    vec2 offset = vec2(0.0);
+    vec2 result = vec2(0.0);
+
+    vec2 direction = targetPosition - originPosition;
+
+    float infect = distance(textureCoord, originPosition)/radius;
+    infect = infect * infect;
     infect = 1.0 - infect;
     infect = clamp(infect, 0.0, 1.0);
     offset = direction * infect;
@@ -127,12 +147,35 @@ vec2 chinChange(vec2 currentCoordinate, float faceLength)
     return coordinate;
 }
 
+vec2 eyeHeight(vec2 currentCoordinate, vec2 circleCenter, float radius, float intensity)
+{
+    float currentDistance = distance(currentCoordinate, circleCenter);
+    float weight = currentDistance / radius;
+    weight = 1.0 - intensity * (1.0 - weight * weight);
+    weight = clamp(weight, 0.0, 1.0);
+    currentCoordinate = vec2(currentCoordinate.x, circleCenter.y + (currentCoordinate.y - circleCenter.y) * weight);
+
+    return currentCoordinate;
+}
+
+vec2 noseHeight(vec2 currentCoordinate, vec2 circleCenter, float radius, float intensity)
+{
+    float currentDistance = distance(currentCoordinate, circleCenter);
+    float weight = currentDistance / radius;
+    weight = 1.0 - intensity * (1.0 - weight * weight);
+    weight = clamp(weight, 0.0, 1.0);
+    float use = step(0.0, currentCoordinate.y - circleCenter.y);
+    currentCoordinate = vec2(currentCoordinate.x, use * currentCoordinate.y + (circleCenter.y + (currentCoordinate.y - circleCenter.y) * weight) *(1.0-use));
+
+    return currentCoordinate;
+}
+
 void main()
 {
     vec2 coordinate = textureCoordinate.xy;
     // 禁用美型处理或者鼻子不在图像中，则直接绘制
     if (enableReshape == 0 || (cartesianPoints[46].x / float(textureWidth) <= 0.03)
-        || (cartesianPoints[46].y / float(textureHeight)) <= 0.03) {
+    || (cartesianPoints[46].y / float(textureHeight)) <= 0.03) {
         gl_FragColor = texture2D(inputTexture, coordinate);
         return;
     }
@@ -140,7 +183,7 @@ void main()
     // 将坐标转成图像大小，这里是为了方便计算
     coordinate = textureCoordinate * vec2(float(textureWidth), float(textureHeight));
 
-    float eyeDistance = distance(cartesianPoints[74], cartesianPoints[77]); // 两个瞳孔的距离
+    float eyeDistance = distance(cartesianPoints[74], cartesianPoints[77]);// 两个瞳孔的距离
 
     // 瘦脸
     coordinate = faceLift(coordinate, eyeDistance);
@@ -156,9 +199,9 @@ void main()
     // 额头
 
     // 大眼
-    float eyeEnlarge = reshapeIntensity[INDEX_EYE_ENLARGE] * 0.12; // 放大倍数
+    float eyeEnlarge = reshapeIntensity[INDEX_EYE_ENLARGE] * 0.12;// 放大倍数
     if (eyeEnlarge > 0.0) {
-        float radius = eyeDistance * 0.33; // 眼睛放大半径
+        float radius = eyeDistance * 0.33;// 眼睛放大半径
         coordinate = enlargeEye(coordinate, cartesianPoints[74] + (cartesianPoints[77] - cartesianPoints[74]) * 0.05, radius, eyeEnlarge);
         coordinate = enlargeEye(coordinate, cartesianPoints[77] + (cartesianPoints[74] - cartesianPoints[77]) * 0.05, radius, eyeEnlarge);
     }
@@ -172,8 +215,12 @@ void main()
     // 鼻翼
 
     // 长鼻
-
+    coordinate = noseHeight(coordinate, cartesianPoints[46], eyeDistance * 0.5, reshapeIntensity[INDEX_FOREHEAD] * 0.3);
     // 嘴型
+
+    // 眼高
+    coordinate = eyeHeight(coordinate, cartesianPoints[74], eyeDistance * 0.5, reshapeIntensity[INDEX_FACE_NARROW] * 0.24);
+    coordinate = eyeHeight(coordinate, cartesianPoints[77], eyeDistance * 0.5, reshapeIntensity[INDEX_FACE_NARROW] * 0.24);
 
     // 转变回原来的纹理坐标系
     coordinate = coordinate / vec2(float(textureWidth), float(textureHeight));

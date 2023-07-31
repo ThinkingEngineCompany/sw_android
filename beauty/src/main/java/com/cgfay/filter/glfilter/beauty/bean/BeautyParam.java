@@ -40,8 +40,11 @@ public class BeautyParam {
     public float proboscisIntensity;
     // 嘴型 0.0 ~ 1.0f;
     public float mouthEnlargeIntensity;
+
     // 美牙 0.0 ~ 1.0f
     public float teethBeautyIntensity;
+    // 眼高 0.0 ~ 1.0f;
+    public float eyeHeightIntensity;
 
     public BeautyParam() {
         reset();
@@ -70,5 +73,6 @@ public class BeautyParam {
         proboscisIntensity = 0.0f;
         mouthEnlargeIntensity = 0.0f;
         teethBeautyIntensity = 0.0f;
+        eyeHeightIntensity = 0.0f;
     }
 }

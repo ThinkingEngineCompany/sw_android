@@ -33,7 +33,7 @@ public class GLImageFaceReshapeFilter extends GLImageDrawElementsFilter implemen
     // 笛卡尔坐标系
     private float[] mCartesianVertices = new float[106 * 2];
     // 脸型程度
-    private float[] mReshapeIntensity = new float[12];
+    private float[] mReshapeIntensity = new float[13];
 
     // 顶点坐标缓冲
     private FloatBuffer mVertexBuffer;
@@ -182,16 +182,21 @@ public class GLImageFaceReshapeFilter extends GLImageDrawElementsFilter implemen
         }
         mReshapeIntensity[0]  = beauty.faceLift;                // 瘦脸
         mReshapeIntensity[1]  = beauty.faceShave;               // 削脸
-        mReshapeIntensity[2]  = beauty.faceNarrow;              // 小脸
+        mReshapeIntensity[2]  = beauty.faceNarrow;              // 小脸 --
         mReshapeIntensity[3]  = beauty.chinIntensity;           // 下巴
-        mReshapeIntensity[4]  = beauty.foreheadIntensity;       // 额头
+        // 法令纹 --
+        mReshapeIntensity[4]  = beauty.foreheadIntensity;       // 额头 --
         mReshapeIntensity[5]  = beauty.eyeEnlargeIntensity;     // 大眼
-        mReshapeIntensity[6]  = beauty.eyeDistanceIntensity;    // 眼距
-        mReshapeIntensity[7]  = beauty.eyeCornerIntensity;      // 眼角
-        mReshapeIntensity[8]  = beauty.noseThinIntensity;       // 瘦鼻
-        mReshapeIntensity[9]  = beauty.alaeIntensity;           // 鼻翼
-        mReshapeIntensity[10] = beauty.proboscisIntensity;      // 长鼻
-        mReshapeIntensity[11] = beauty.mouthEnlargeIntensity;   // 嘴型
+        mReshapeIntensity[6]  = beauty.eyeDistanceIntensity;    // 眼距 --
+        mReshapeIntensity[7]  = beauty.eyeCornerIntensity;      // 眼角 --
+        // 卧蚕 眼袋 亮眼
+        mReshapeIntensity[8]  = beauty.noseThinIntensity;       // 瘦鼻 --
+        mReshapeIntensity[9]  = beauty.alaeIntensity;           // 鼻翼 --
+        mReshapeIntensity[10] = beauty.proboscisIntensity;      // 长鼻 --
+        mReshapeIntensity[11] = beauty.mouthEnlargeIntensity;   // 嘴型 --
+        mReshapeIntensity[12] = beauty.eyeHeightIntensity;   // 眼高 --
+//        Log.e("xie", "eyeHeight:" + beauty.eyeHeightIntensity);
+        // 美牙
     }
 
     /**

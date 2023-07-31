@@ -79,10 +79,10 @@
         <item>肤色</item>
         <item>瘦脸</item>
         <item>削脸</item>
-        <item>小脸</item>
+        <item>眼高</item>
         <item>下巴</item>
         <item>法令纹</item>
-        <item>额头</item>
+        <item>长鼻</item>
         <item>大眼</item>
         <item>眼距</item>
         <item>眼角</item>
@@ -91,9 +91,10 @@
         <item>亮眼</item>
         <item>瘦鼻</item>
         <item>鼻翼</item>
-        <item>长鼻</item>
+        <item>长鼻-</item>
         <item>嘴型</item>
         <item>美牙</item>
+        <item>眼高-</item>
     </string-array>
 
     <!-- 美妆 -->

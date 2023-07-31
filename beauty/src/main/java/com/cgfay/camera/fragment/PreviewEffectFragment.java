@@ -379,7 +379,7 @@ public class PreviewEffectFragment extends Fragment implements View.OnClickListe
         } else if (position == 6) {     // 法令纹
             mValueSeekBar.setProgress((int)(mCameraParam.beauty.nasolabialFoldsIntensity * 100));
         } else if (position == 7) {     // 额头
-            mValueSeekBar.setProgress((int)((1.0f + mCameraParam.beauty.foreheadIntensity) * 50));
+            mValueSeekBar.setProgress((int)((mCameraParam.beauty.foreheadIntensity) * 100));
         } else if (position == 8) {     // 大眼
             mValueSeekBar.setProgress((int)(mCameraParam.beauty.eyeEnlargeIntensity * 100));
         } else if (position == 9) {     // 眼距
@@ -402,6 +402,8 @@ public class PreviewEffectFragment extends Fragment implements View.OnClickListe
             mValueSeekBar.setProgress((int)(mCameraParam.beauty.mouthEnlargeIntensity * 100));
         } else if (position == 18) {    // 美牙
             mValueSeekBar.setProgress((int)(mCameraParam.beauty.teethBeautyIntensity * 100));
+        } else if (position == 19) {    // 眼高
+            mValueSeekBar.setProgress((int)(mCameraParam.beauty.eyeHeightIntensity * 100));
         }
     }
 
@@ -425,7 +427,7 @@ public class PreviewEffectFragment extends Fragment implements View.OnClickListe
         } else if (position == 6) {     // 法令纹
             mCameraParam.beauty.nasolabialFoldsIntensity = progress / 100.0f;
         } else if (position == 7) {     // 额头
-            mCameraParam.beauty.foreheadIntensity = (progress - 50.0f) / 50.0f;
+            mCameraParam.beauty.foreheadIntensity = progress / 100.0f;
         } else if (position == 8) {     // 大眼
             mCameraParam.beauty.eyeEnlargeIntensity = progress / 100.0f;
         } else if (position == 9) {     // 眼距
@@ -448,6 +450,8 @@ public class PreviewEffectFragment extends Fragment implements View.OnClickListe
             mCameraParam.beauty.mouthEnlargeIntensity = progress / 100.0f;
         } else if (position == 18) {    // 美牙
             mCameraParam.beauty.teethBeautyIntensity = progress / 100.0f;
+        } else if (position == 19) {    // 眼高
+            mCameraParam.beauty.eyeHeightIntensity = progress / 100.0f;
         }
     }
 

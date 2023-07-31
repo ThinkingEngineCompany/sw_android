@@ -1,4 +1,4 @@
-precision mediump float;
+ precision mediump float;
 
 varying vec2 textureCoordinate;     // 图像纹理坐标
 
