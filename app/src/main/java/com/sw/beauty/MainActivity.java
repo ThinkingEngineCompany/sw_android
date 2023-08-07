@@ -12,7 +12,7 @@ import android.os.Handler;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.cgfay.camera.activity.CameraActivity;
+import com.sw.beauty.home.HomeActivity;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -31,14 +31,15 @@ public class MainActivity extends AppCompatActivity {
                 public void run() {
 //                    startActivity(new Intent(MainActivity.this, PlayActivity.class));
 //                    startActivity(new Intent(MainActivity.this, MatAndBeautyActivity.class));
-                    startActivity(new Intent(MainActivity.this, CameraActivity.class));
+                    // CameraActivity
+                    startActivity(new Intent(MainActivity.this, HomeActivity.class));
                     finish();
                 }
             }, 500);
         } else {
 //            startActivity(new Intent(this, PlayActivity.class));
 //            startActivity(new Intent(this, MatAndBeautyActivity.class));
-            startActivity(new Intent(MainActivity.this, CameraActivity.class));
+            startActivity(new Intent(MainActivity.this, HomeActivity.class));
             finish();
         }
     }
