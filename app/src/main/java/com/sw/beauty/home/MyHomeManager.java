@@ -6,6 +6,8 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.sw.beauty.my.SceneManageActivity;
+
 import java.util.ArrayList;
 
 public class MyHomeManager {
@@ -28,6 +30,7 @@ public class MyHomeManager {
             @Override
             public void onClick(String s) {
                 // 前往场景管理页面
+                SceneManageActivity.start(act);
             }
         });
         rv.setAdapter(adapter);
