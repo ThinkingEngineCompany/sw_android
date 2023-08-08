@@ -12,16 +12,15 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.sw.beauty.R;
 import com.sw.beauty.bean.Model;
-import com.sw.beauty.bean.PicVideoModel;
 
 import java.util.List;
 
-public class ModelDetailAdapter extends RecyclerView.Adapter<ModelDetailAdapter.ViewHolder> {
-    private List<PicVideoModel> dataList;
+public class MyHomeAdapter extends RecyclerView.Adapter<MyHomeAdapter.ViewHolder> {
+    private List<String> dataList;
 
     private ClickL c;
 
-    public ModelDetailAdapter(List<PicVideoModel> dataList, ClickL onClickListener) {
+    public MyHomeAdapter(List<String> dataList, ClickL onClickListener) {
         this.dataList = dataList;
         this.c = onClickListener;
     }
@@ -29,7 +28,7 @@ public class ModelDetailAdapter extends RecyclerView.Adapter<ModelDetailAdapter.
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_layout_detail, parent, false);
+        View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.my_item_layout, parent, false);
         return new ViewHolder(itemView);
     }
 
@@ -40,7 +39,7 @@ public class ModelDetailAdapter extends RecyclerView.Adapter<ModelDetailAdapter.
         holder.allView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                c.onClick(dataList.get(p).getUrl());
+                c.onClick(dataList.get(p));
             }
         });
     }
@@ -51,21 +50,22 @@ public class ModelDetailAdapter extends RecyclerView.Adapter<ModelDetailAdapter.
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
-        private ImageView img;
+        private TextView titleView;
         public View allView;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             allView = itemView;
-            img = itemView.findViewById(R.id.show_img_iv);
+            titleView = itemView.findViewById(R.id.title_tv);
+
         }
 
-        public void bindData(PicVideoModel data) {
-            Glide.with(img).load(data.getUrl()).into(img);
+        public void bindData(String text) {
+            titleView.setText(text);
         }
     }
 
     public interface ClickL {
-        void onClick(String model);
+        void onClick(String text);
     }
 }

@@ -1,6 +1,7 @@
 package com.sw.beauty.home;
 
 import android.annotation.SuppressLint;
+import android.view.View;
 
 
 import androidx.lifecycle.Observer;
@@ -20,13 +21,13 @@ public class MainHomeManager {
     private final HomeViewModel viewModel;
     private final HomeAdapter adapter;
 
-    public MainHomeManager(HomeActivity homeActivity) {
+    public MainHomeManager(HomeActivity homeActivity, View view) {
         this.act = homeActivity;
 
         ViewModelProvider viewModelProvider = new ViewModelProvider(act);
         viewModel = viewModelProvider.get(HomeViewModel.class);
         ArrayList<Model> ms = new ArrayList<>();
-        RecyclerView rv = act.findViewById(R.id.recycler_view);
+        RecyclerView rv = (RecyclerView) view;
         rv.setLayoutManager(new LinearLayoutManager(act));
         adapter = new HomeAdapter(ms, new HomeAdapter.ClickL() {
             @Override
