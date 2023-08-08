@@ -1,19 +1,17 @@
 package com.sw.beauty;
 
-import androidx.appcompat.app.AppCompatActivity;
-
+import android.content.Context;
 import android.content.Intent;
-import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
-import android.view.SurfaceView;
 import android.view.Window;
-import android.widget.FrameLayout;
-import android.widget.Toast;
 
+import androidx.appcompat.app.AppCompatActivity;
+
+import com.sw.beauty.bean.Model;
+import com.sw.beauty.util.FileUtils;
 import com.unity3d.player.IUnityPlayerLifecycleEvents;
 import com.unity3d.player.MultiWindowSupport;
 import com.unity3d.player.UnityPlayer;
@@ -22,8 +20,9 @@ public class PlayActivity extends AppCompatActivity implements
         IUnityPlayerLifecycleEvents {
     private long exitTime = 0;
     protected UnityPlayer mUnityPlayer;
-//    private MatModule mat;
+    //    private MatModule mat;
     private BeautyModule beauty;
+    public static final String EXTRA_SCENE_FILE = "extra_scene_file";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,22 +33,12 @@ public class PlayActivity extends AppCompatActivity implements
 
         beauty = new BeautyModule(this);
         mUnityPlayer = unity.mUnityPlayer;
+        // sendMessage...
     }
 
     @Override
     public void onAttachedToWindow() {
         super.onAttachedToWindow();
-    }
-
-    @Override
-    public void onBackPressed() {
-        if ((System.currentTimeMillis() - exitTime) > 2000) {
-            Toast.makeText(getApplicationContext(), "再按一次退出程序", Toast.LENGTH_SHORT).show();
-            exitTime = System.currentTimeMillis();
-        } else {
-            finish();
-            System.exit(0);
-        }
     }
 
     @Override
@@ -68,7 +57,6 @@ public class PlayActivity extends AppCompatActivity implements
     public void onUnityPlayerQuitted() {
 
     }
-
 
 
     @Override
@@ -140,22 +128,22 @@ public class PlayActivity extends AppCompatActivity implements
         mUnityPlayer.windowFocusChanged(hasFocus);
     }
 
-    @Override
-    public boolean dispatchKeyEvent(KeyEvent event) {
-        if (event.getAction() == KeyEvent.ACTION_MULTIPLE)
-            return mUnityPlayer.injectEvent(event);
-        return super.dispatchKeyEvent(event);
-    }
-
-    @Override
-    public boolean onKeyUp(int keyCode, KeyEvent event) {
-        return mUnityPlayer.injectEvent(event);
-    }
-
-    @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        return mUnityPlayer.injectEvent(event);
-    }
+//    @Override
+//    public boolean dispatchKeyEvent(KeyEvent event) {
+//        if (event.getAction() == KeyEvent.ACTION_MULTIPLE)
+//            return mUnityPlayer.injectEvent(event);
+//        return super.dispatchKeyEvent(event);
+//    }
+//
+//    @Override
+//    public boolean onKeyUp(int keyCode, KeyEvent event) {
+//        return mUnityPlayer.injectEvent(event);
+//    }
+//
+//    @Override
+//    public boolean onKeyDown(int keyCode, KeyEvent event) {
+//        return mUnityPlayer.injectEvent(event);
+//    }
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
@@ -165,5 +153,13 @@ public class PlayActivity extends AppCompatActivity implements
     /*API12*/
     public boolean onGenericMotionEvent(MotionEvent event) {
         return mUnityPlayer.injectEvent(event);
+    }
+
+    public static void start(Context context, Model model) {
+        Intent starter = new Intent(context, PlayActivity.class);
+        if (model != null) {
+            starter.putExtra(EXTRA_SCENE_FILE, FileUtils.getModelFile(model));
+        }
+        context.startActivity(starter);
     }
 }

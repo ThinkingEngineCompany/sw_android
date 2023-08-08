@@ -81,6 +81,9 @@ public class FileUtils {
     }
 
     public static String getFilePath(ModelManItem item) {
-        return getFilePath(item.getFileName());
+        if (item != null) {
+            return getFilePath(item.getFileName());
+        }
+        return "";
     }
 }

@@ -20,6 +20,7 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.viewpager.widget.ViewPager;
 
 import com.bumptech.glide.Glide;
+import com.sw.beauty.PlayActivity;
 import com.sw.beauty.R;
 import com.sw.beauty.bean.Model;
 import com.sw.beauty.bean.PicModelResponse;
@@ -100,17 +101,18 @@ public class DetailManager {
                     modelTv.setVisibility(View.VISIBLE);
                     String fileName = FileUtils.getModelFile(model);
                     if (new File(fileName).exists()) {
-                        showComplete();
+                        showComplete(model);
+                    } else {
+                        modelTv.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                // download to sd
+                                modelTv.setVisibility(View.GONE);
+                                progressBar.setVisibility(View.VISIBLE);
+                                startDownload(model);
+                            }
+                        });
                     }
-                    modelTv.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            // download to sd
-                            modelTv.setVisibility(View.GONE);
-                            progressBar.setVisibility(View.VISIBLE);
-                            startDownload(model);
-                        }
-                    });
                 }
                 adapter.notifyDataSetChanged();
                 pageSize = modelResponse.getData().size();
@@ -158,7 +160,8 @@ public class DetailManager {
             public void onDownloadComplete() {
                 // 处理下载完成的逻辑
                 // 更新UI，显示下载完成提示
-                showComplete();
+                Toast.makeText(act, "下载成功", Toast.LENGTH_SHORT).show();
+                showComplete(model);
             }
 
             @Override
@@ -178,15 +181,15 @@ public class DetailManager {
         downloadTask.execute(modelUrl, filePath);
     }
 
-    private void showComplete() {
+    private void showComplete(final Model model) {
         progressBar.setVisibility(View.GONE);
         modelTv.setVisibility(View.VISIBLE);
         modelTv.setText("使用");
-        Toast.makeText(act, "下载成功", Toast.LENGTH_SHORT).show();
         modelTv.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 // 打开场景并使用
+                PlayActivity.start(act, model);
             }
         });
     }

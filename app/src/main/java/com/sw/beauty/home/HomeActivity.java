@@ -8,6 +8,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.ViewPager;
 
+import com.sw.beauty.PlayActivity;
 import com.sw.beauty.R;
 
 import java.util.ArrayList;
@@ -17,6 +18,7 @@ public class HomeActivity extends AppCompatActivity {
     ArrayList<View> views = new ArrayList<>();
     private TextView homeTv;
     private TextView myTv;
+    private TextView takeTv;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,6 +30,7 @@ public class HomeActivity extends AppCompatActivity {
         MyHomeManager myHomeManager = new MyHomeManager(this, views.get(1));
         homeTv = findViewById(R.id.home_page_tv);
         myTv = findViewById(R.id.my_tv);
+        takeTv = findViewById(R.id.take_photo_tv);
         homeTv.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -42,6 +45,12 @@ public class HomeActivity extends AppCompatActivity {
                 homeTv.setTextColor(0x66000000);
                 myTv.setTextColor(0xdd000000);
                 viewPager.setCurrentItem(1, false);
+            }
+        });
+        takeTv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                PlayActivity.start(HomeActivity.this, null);
             }
         });
     }
