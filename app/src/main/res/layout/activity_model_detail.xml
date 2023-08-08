@@ -11,6 +11,7 @@
         android:layout_width="match_parent"
         app:layout_constraintTop_toTopOf="parent"
         android:layout_height="170dp" />
+
     <TextView
         android:id="@+id/page_hint"
         app:layout_constraintBottom_toBottomOf="@id/view_pager"

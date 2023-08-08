@@ -8,7 +8,7 @@ public class PicVideoModel {
 
     private int modelId;   // int(0) NOT NULL AUTO_INCREMENT,
     private String url;   //     varchar(45) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL,
-    private int type;
+    private int type; //0: 图片, 1: 视频, 2: 模型
     private int showIndex;
     private String createTime;   //     timestamp(6) NULL DEFAULT NULL,
     private String updateTime;   // timestamp(6) NULL DEFAULT NULL,

@@ -1,21 +1,24 @@
 package com.sw.beauty.home;
 
 import android.annotation.SuppressLint;
+import android.media.MediaPlayer;
+import android.text.TextUtils;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.VideoView;
 
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.ViewPager;
 
 import com.bumptech.glide.Glide;
 import com.sw.beauty.R;
 import com.sw.beauty.bean.Model;
-import com.sw.beauty.bean.ModelResponse;
 import com.sw.beauty.bean.PicModelResponse;
 import com.sw.beauty.bean.PicVideoModel;
 
@@ -30,11 +33,12 @@ public class DetailManager {
     private final TextView pageHint;
     private ArrayList<View> views = new ArrayList<>();
     private int pageSize = 1;
+    private String videoUrl;
+    private VideoView videoView;
 
     public DetailManager(ModelDetailActivity homeActivity) {
         this.act = homeActivity;
         Model model = (Model) homeActivity.getIntent().getExtras().get(ModelDetailActivity.EXTRA_MODEL);
-
 
         ViewModelProvider viewModelProvider = new ViewModelProvider(act);
         viewModel = viewModelProvider.get(HomeViewModel.class);
@@ -50,9 +54,36 @@ public class DetailManager {
             @Override
             public void onChanged(PicModelResponse modelResponse) {
                 ms.addAll(modelResponse.getData());
-                views.clear();
-                for (int i = 0; i < modelResponse.getData().size(); i++) {
-                    views.add(getViewItem(modelResponse.getData().get(i).getUrl()));
+                for (int i = 1; i < modelResponse.getData().size(); i++) {
+                    PicVideoModel picVideoModel = modelResponse.getData().get(i);
+                    if (picVideoModel.getType() == 0) {
+                        views.add(getViewItem(picVideoModel.getUrl()));
+                    } else {
+                        videoUrl = picVideoModel.getUrl();
+                    }
+                }
+                if (!TextUtils.isEmpty(videoUrl)) {
+                    views.get(0).findViewById(R.id.play_iv).setVisibility(View.VISIBLE);
+                    views.get(0).setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            if (videoView == null) {
+                                videoView = new VideoView(act);
+                                FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+                                params.gravity = Gravity.CENTER_HORIZONTAL;
+                                ((FrameLayout) views.get(0)).addView(videoView, params);
+                                videoView.setVideoPath(videoUrl);
+                                videoView.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                                    @Override
+                                    public void onCompletion(MediaPlayer mp) {
+                                        videoView.setVisibility(View.GONE);
+                                    }
+                                });
+                            }
+                            videoView.setVisibility(View.VISIBLE);
+                            videoView.start();
+                        }
+                    });
                 }
                 adapter.notifyDataSetChanged();
                 pageSize = modelResponse.getData().size();
@@ -62,7 +93,10 @@ public class DetailManager {
         vp.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-
+                if (videoView != null) {
+                    videoView.stopPlayback();
+                    videoView.setVisibility(View.GONE);
+                }
             }
 
             @Override
