@@ -78,7 +78,7 @@ public class CameraControllerX implements ICameraController, Camera.PreviewCallb
 
     @Override
     public void openCamera() {
-        ncnnbodyseg.closeCamera();
+        //ncnnbodyseg.closeCamera();
         ncnnbodyseg.openCamera(facing);
         if (mSurfaceTextureListener != null) {
             mSurfaceTextureListener.onSurfaceTexturePrepared(mOutputTexture);

@@ -15,7 +15,6 @@ import com.cgfay.camera.fragment.CameraPreviewFragment;
 import com.cgfay.facedetect.engine.FaceTracker;
 import com.cgfay.uitls.utils.NotchUtils;
 import com.sw.beauty.ui.CameraPreviewFragmentX;
-import com.tencent.ncnnbodyseg.NcnnBodyseg;
 
 public class MatAndBeautyActivity extends AppCompatActivity {
     private static final String FRAGMENT_CAMERA = "fragment_camera";
@@ -114,4 +113,10 @@ public class MatAndBeautyActivity extends AppCompatActivity {
             }
         }
     };
+    public static void start(Context context) {
+        Intent starter = new Intent(context, MatAndBeautyActivity.class);
+        //starter.putExtra();
+        context.startActivity(starter);
+    }
+
 }

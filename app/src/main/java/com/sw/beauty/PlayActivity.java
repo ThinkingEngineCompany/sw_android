@@ -1,17 +1,21 @@
 package com.sw.beauty;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
+import android.view.View;
 import android.view.Window;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.sw.beauty.bean.Model;
 import com.sw.beauty.util.FileUtils;
+import com.unity3d.player.E;
 import com.unity3d.player.IUnityPlayerLifecycleEvents;
 import com.unity3d.player.MultiWindowSupport;
 import com.unity3d.player.UnityPlayer;
@@ -24,14 +28,23 @@ public class PlayActivity extends AppCompatActivity implements
     private BeautyModule beauty;
     public static final String EXTRA_SCENE_FILE = "extra_scene_file";
 
+    @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_play);
         UnityModule unity = new UnityModule(this);
-
+        Log.e("xie", "onCreate:");
         beauty = new BeautyModule(this);
+        findViewById(R.id.back).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //finish();
+                UnityPlayer.UnitySendMessage("Main Camera", "loadAndUseScene",
+                        FileUtils.getFilePath(FileUtils.getModelFileNameById("4_Feel")));
+            }
+        });
         mUnityPlayer = unity.mUnityPlayer;
         // sendMessage...
     }
@@ -66,7 +79,7 @@ public class PlayActivity extends AppCompatActivity implements
         if (MultiWindowSupport.getAllowResizableWindow(this) && !MultiWindowSupport.isMultiWindowModeChangedToTrue(this))
             return;
 
-        mUnityPlayer.resume();
+       mUnityPlayer.resume();
     }
 
     @Override
@@ -75,12 +88,18 @@ public class PlayActivity extends AppCompatActivity implements
         beauty.onStart();
         if (!MultiWindowSupport.getAllowResizableWindow(this))
             return;
-        mUnityPlayer.resume();
+       mUnityPlayer.resume();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
+        MultiWindowSupport.saveMultiWindowMode(this);
+
+        if (MultiWindowSupport.getAllowResizableWindow(this))
+            return;
+
+        mUnityPlayer.pause();
         beauty.onPause();
     }
 
@@ -95,25 +114,31 @@ public class PlayActivity extends AppCompatActivity implements
 
     @Override
     protected void onDestroy() {
+        try {
+            mUnityPlayer.destroy();
+        } catch (Exception e){
+            Log.e("xie", "e:" + e.getMessage());
+        }
         super.onDestroy();
         beauty.onDestroy();
+
     }
 
     // Low Memory Unity
-    @Override
-    public void onLowMemory() {
-        super.onLowMemory();
-        mUnityPlayer.lowMemory();
-    }
-
-    // Trim Memory Unity
-    @Override
-    public void onTrimMemory(int level) {
-        super.onTrimMemory(level);
-        if (level == TRIM_MEMORY_RUNNING_CRITICAL) {
-            mUnityPlayer.lowMemory();
-        }
-    }
+//    @Override
+//    public void onLowMemory() {
+//        super.onLowMemory();
+//        mUnityPlayer.lowMemory();
+//    }
+//
+//    // Trim Memory Unity
+//    @Override
+//    public void onTrimMemory(int level) {
+//        super.onTrimMemory(level);
+//        if (level == TRIM_MEMORY_RUNNING_CRITICAL) {
+//            mUnityPlayer.lowMemory();
+//        }
+//    }
 
     // This ensures the layout will be correct.
     @Override
