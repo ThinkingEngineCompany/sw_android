@@ -183,6 +183,17 @@ vec2 noseHeight(vec2 currentCoordinate, vec2 circleCenter, float radius, float i
     return currentCoordinate;
 }
 
+vec2 noseWidth(vec2 currentCoordinate, vec2 circleCenter, float radius, float intensity)
+{
+    float currentDistance = distance(currentCoordinate, circleCenter);
+    float weight = currentDistance / radius;
+    weight = 1.0 - intensity * (1.0 - weight * weight);
+    weight = clamp(weight, 0.0, 1.0);
+
+    currentCoordinate = vec2(circleCenter.x + (currentCoordinate.x - circleCenter.x) * weight, currentCoordinate.y);
+    return currentCoordinate;
+}
+
 void main()
 {
     vec2 coordinate = textureCoordinate.xy;
@@ -228,7 +239,7 @@ void main()
     // 瘦鼻
 
     // 鼻翼
-
+    coordinate = noseWidth(coordinate, cartesianPoints[46], eyeDistance * 0.5, reshapeIntensity[INDEX_ALAE] * 0.3);
     // 长鼻
     coordinate = noseHeight(coordinate, cartesianPoints[46], eyeDistance * 0.5, reshapeIntensity[INDEX_FOREHEAD] * 0.3);
     // 嘴型
