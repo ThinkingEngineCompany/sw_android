@@ -190,8 +190,8 @@ public class GLImageFaceReshapeFilter extends GLImageDrawElementsFilter implemen
         mReshapeIntensity[6]  = beauty.eyeDistanceIntensity;    // 眼距 --
         mReshapeIntensity[7]  = beauty.eyeCornerIntensity;      // 眼角 --
         // 卧蚕 眼袋 亮眼
-        mReshapeIntensity[8]  = beauty.noseThinIntensity;       // 瘦鼻 --
-        mReshapeIntensity[9]  = beauty.alaeIntensity;           // 鼻翼 --
+        mReshapeIntensity[8]  = beauty.noseThinIntensity;       // 鼻梁
+        mReshapeIntensity[9]  = beauty.alaeIntensity;           // 鼻翼
         mReshapeIntensity[10] = beauty.proboscisIntensity;      // 长鼻 --
         mReshapeIntensity[11] = beauty.mouthEnlargeIntensity;   // 嘴型 --
         mReshapeIntensity[12] = beauty.eyeHeightIntensity;   // 眼高 --

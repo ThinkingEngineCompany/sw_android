@@ -7,13 +7,13 @@ uniform vec2 cartesianPoints[106];
 
 #define INDEX_FACE_LIFT     0// 瘦脸
 #define INDEX_FACE_SHAVE    1// 削脸
-#define INDEX_FACE_NARROW   2// 小脸
+#define INDEX_FACE_NARROW   2// 小脸 - 眼高
 #define INDEX_CHIN          3// 下巴
-#define INDEX_FOREHEAD      4// 额头
+#define INDEX_FOREHEAD      4// 额头 -
 #define INDEX_EYE_ENLARGE   5// 大眼
 #define INDEX_EYE_DISTANCE  6// 眼距
 #define INDEX_EYE_CORNER    7// 眼角
-#define INDEX_NOSE_THIN     8// 瘦鼻
+#define INDEX_NOSE_THIN     8// 鼻梁
 #define INDEX_ALAE          9// 鼻翼
 #define INDEX_PROBOSCIS    10// 长鼻
 #define INDEX_MOUTH        11// 嘴型
@@ -236,8 +236,8 @@ void main()
 
     // 眼角
 
-    // 瘦鼻
-
+    // 鼻梁
+    coordinate = noseWidth(coordinate, cartesianPoints[44], eyeDistance * 0.5, reshapeIntensity[INDEX_NOSE_THIN] * 0.3);
     // 鼻翼
     coordinate = noseWidth(coordinate, cartesianPoints[46], eyeDistance * 0.5, reshapeIntensity[INDEX_ALAE] * 0.3);
     // 长鼻
