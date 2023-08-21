@@ -154,7 +154,21 @@ vec2 eyeHeight(vec2 currentCoordinate, vec2 circleCenter, float radius, float in
     weight = 1.0 - intensity * (1.0 - weight * weight);
     weight = clamp(weight, 0.0, 1.0);
     currentCoordinate = vec2(currentCoordinate.x, circleCenter.y + (currentCoordinate.y - circleCenter.y) * weight);
+    return currentCoordinate;
+}
 
+vec2 eyeSplit(vec2 currentCoordinate, vec2 circleCenter, float radius, float intensity)
+{
+    float dx = currentCoordinate.x - circleCenter.x;
+    float dy = currentCoordinate.y - circleCenter.y;
+    float currentDistance = sqrt(dx * dx + dy * dy * 3.0);
+    float weight = currentDistance / radius;// 100 - 0.1
+    //weight = 1.0 - abs(intensity) * (1.0 - weight * weight); //
+    float rang = step(0.0, 1.0 - weight);
+    weight = clamp(1.0 - weight, 0.0, 1.0);
+    float left = step(0.2, weight);
+    weight = (1.0 - left) * smoothstep(0.0, 0.2, weight) + left;
+    currentCoordinate = vec2(currentCoordinate.x + intensity * rang * weight, currentCoordinate.y);
     return currentCoordinate;
 }
 
@@ -166,7 +180,6 @@ vec2 noseHeight(vec2 currentCoordinate, vec2 circleCenter, float radius, float i
     weight = clamp(weight, 0.0, 1.0);
     float use = step(0.0, currentCoordinate.y - circleCenter.y);
     currentCoordinate = vec2(currentCoordinate.x, use * currentCoordinate.y + (circleCenter.y + (currentCoordinate.y - circleCenter.y) * weight) *(1.0-use));
-
     return currentCoordinate;
 }
 
@@ -207,6 +220,8 @@ void main()
     }
 
     // 眼距
+    coordinate = eyeSplit(coordinate, cartesianPoints[74], eyeDistance * 0.3, reshapeIntensity[INDEX_EYE_DISTANCE] * -6.4);
+    coordinate = eyeSplit(coordinate, cartesianPoints[77], eyeDistance * 0.3, reshapeIntensity[INDEX_EYE_DISTANCE] * 6.4);
 
     // 眼角
 
