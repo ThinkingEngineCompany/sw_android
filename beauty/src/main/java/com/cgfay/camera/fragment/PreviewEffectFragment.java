@@ -3,6 +3,7 @@ package com.cgfay.camera.fragment;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -24,6 +25,7 @@ import com.cgfay.camera.adapter.PreviewBeautyAdapter;
 import com.cgfay.camera.adapter.PreviewFilterAdapter;
 import com.cgfay.camera.adapter.PreviewMakeupAdapter;
 import com.cgfay.camera.camera.CameraParam;
+import com.cgfay.camera.data.BeautyItemData;
 import com.cgfay.video.R;
 import com.cgfay.filter.glfilter.color.bean.DynamicColor;
 import com.cgfay.filter.glfilter.makeup.bean.DynamicMakeup;
@@ -88,6 +90,7 @@ public class PreviewEffectFragment extends Fragment implements View.OnClickListe
 
     // 相机参数
     private CameraParam mCameraParam;
+    private ArrayList<PreviewBeautyAdapter.BeautyData> initBeautyData;
 
     @Override
     public void onAttach(Context context) {
@@ -111,6 +114,7 @@ public class PreviewEffectFragment extends Fragment implements View.OnClickListe
 
     /**
      * 初始化页面
+     *
      * @param view
      */
     private void initView(View view) {
@@ -121,11 +125,12 @@ public class PreviewEffectFragment extends Fragment implements View.OnClickListe
 
     /**
      * 初始化比较滤镜
+     *
      * @param view
      */
     private void initCompareButton(@NonNull View view) {
         mBtnCompare = view.findViewById(R.id.btn_compare);
-        mBtnCompare.setOnTouchListener((v, event)-> {
+        mBtnCompare.setOnTouchListener((v, event) -> {
             switch (event.getAction()) {
                 case MotionEvent.ACTION_DOWN:
                     if (mCompareEffectListener != null) {
@@ -157,6 +162,7 @@ public class PreviewEffectFragment extends Fragment implements View.OnClickListe
 
     /**
      * 初始化列表
+     *
      * @param view
      */
     private void initViewList(@NonNull View view) {
@@ -188,7 +194,8 @@ public class PreviewEffectFragment extends Fragment implements View.OnClickListe
             }
         });
     }
-
+    int lastInsertIndex = -1;
+    int lastInsertLength = -1;
     /**
      * 显示美颜视图布局
      */
@@ -199,9 +206,36 @@ public class PreviewEffectFragment extends Fragment implements View.OnClickListe
         mBeautyLayoutManager = new LinearLayoutManager(mActivity);
         mBeautyLayoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);
         mBeautyRecyclerView.setLayoutManager(mBeautyLayoutManager);
-        mBeautyAdapter = new PreviewBeautyAdapter(mActivity);
+        initBeautyData = BeautyItemData.getInitData(mActivity);
+        mBeautyAdapter = new PreviewBeautyAdapter(mActivity, initBeautyData);
         mBeautyRecyclerView.setAdapter(mBeautyAdapter);
-        mBeautyAdapter.addOnBeautySelectedListener((position, beautyName) -> setSeekBarBeautyParam(position));
+        mBeautyAdapter.addOnBeautySelectedListener((position, beautyData) -> {
+            if (beautyData.type == 0 || beautyData.type == 3) {
+                // 整体的position
+                setSeekBarBeautyParam(position);
+            } else if (beautyData.type == 1) {
+                if (lastInsertIndex != -1) {
+                    close();
+                    mBeautyAdapter.notifyItemRangeRemoved(lastInsertIndex,
+                            lastInsertLength);
+                    lastInsertIndex = -1;
+                    lastInsertLength = -1;
+                    mBeautyAdapter.notifyItemChanged(position - 1, 0);
+                } else {
+                    showItem(position, beautyData);
+                    mBeautyAdapter.notifyItemRangeInserted(position, beautyData.items.size());
+                    lastInsertIndex = position;
+                    lastInsertLength = beautyData.items.size();
+                }
+            } else if (beautyData.type == 2) {
+                close();
+                mBeautyAdapter.notifyItemRangeRemoved(position,
+                        initBeautyData.get(position - 1).items.size());
+                lastInsertIndex = -1;
+                lastInsertLength = -1;
+                mBeautyAdapter.notifyItemChanged(position - 1, 0);
+            }
+        });
         mBtnReset = beautyView.findViewById(R.id.btn_beauty_reset);
         mBtnReset.setOnClickListener(v -> {
             mCameraParam.beauty.reset();
@@ -210,6 +244,23 @@ public class PreviewEffectFragment extends Fragment implements View.OnClickListe
         setSeekBarBeautyParam(mBeautyAdapter.getSelectedPosition());
         mEffectViewLists.add(beautyView);
         mEffectTitleLists.add(getResources().getString(R.string.tab_preview_beauty));
+    }
+
+    private void close() {
+        for (int i = initBeautyData.size() - 1; i >= 0; i--) {
+            if (initBeautyData.get(i).type == 3 || initBeautyData.get(i).type == 2) {
+                initBeautyData.remove(initBeautyData.get(i));
+            } else if (initBeautyData.get(i).type == 1) {
+                initBeautyData.get(i).isShow = true;
+            }
+        }
+    }
+
+    private void showItem(int position, PreviewBeautyAdapter.BeautyData beautyData) {
+        initBeautyData.get(position).isShow = false;
+        for (int i = beautyData.items.size() - 1; i >= 0; i--) {
+            initBeautyData.add(position + 1, beautyData.items.get(i));
+        }
     }
 
     /**
@@ -303,13 +354,11 @@ public class PreviewEffectFragment extends Fragment implements View.OnClickListe
         super.onDestroyView();
     }
 
-
     @Override
     public void onDetach() {
         mActivity = null;
         super.onDetach();
     }
-
 
     @Override
     public void onClick(View v) {
@@ -365,50 +414,51 @@ public class PreviewEffectFragment extends Fragment implements View.OnClickListe
      */
     private void setSeekBarBeautyParam(int position) {
         if (position == 0) {            // 磨皮
-            mValueSeekBar.setProgress((int)(mCameraParam.beauty.beautyIntensity * 100));
+            mValueSeekBar.setProgress((int) (mCameraParam.beauty.beautyIntensity * 100));
         } else if (position == 1) {     // 肤色
             mValueSeekBar.setProgress((int) (mCameraParam.beauty.complexionIntensity * 100));
         } else if (position == 2) {     // 瘦脸
-            mValueSeekBar.setProgress((int)(mCameraParam.beauty.faceLift * 100));
+            mValueSeekBar.setProgress((int) (mCameraParam.beauty.faceLift * 100));
         } else if (position == 3) {     // 削脸
-            mValueSeekBar.setProgress((int)(mCameraParam.beauty.faceShave * 100));
+            mValueSeekBar.setProgress((int) (mCameraParam.beauty.faceShave * 100));
         } else if (position == 4) {     // 小脸
-            mValueSeekBar.setProgress((int)(mCameraParam.beauty.faceNarrow * 100));
+            mValueSeekBar.setProgress((int) (mCameraParam.beauty.faceNarrow * 100));
         } else if (position == 5) {     // 下巴
-            mValueSeekBar.setProgress((int)((1.0f + mCameraParam.beauty.chinIntensity) * 50));
+            mValueSeekBar.setProgress((int) ((1.0f + mCameraParam.beauty.chinIntensity) * 50));
         } else if (position == 6) {     // 法令纹
-            mValueSeekBar.setProgress((int)(mCameraParam.beauty.nasolabialFoldsIntensity * 100));
+            mValueSeekBar.setProgress((int) (mCameraParam.beauty.nasolabialFoldsIntensity * 100));
         } else if (position == 7) {     // 额头
-            mValueSeekBar.setProgress((int)((mCameraParam.beauty.foreheadIntensity) * 100));
+            mValueSeekBar.setProgress((int) ((mCameraParam.beauty.foreheadIntensity) * 100));
         } else if (position == 8) {     // 大眼
-            mValueSeekBar.setProgress((int)(mCameraParam.beauty.eyeEnlargeIntensity * 100));
+            mValueSeekBar.setProgress((int) (mCameraParam.beauty.eyeEnlargeIntensity * 100));
         } else if (position == 9) {     // 眼距
-            mValueSeekBar.setProgress((int)((1.0f + mCameraParam.beauty.eyeDistanceIntensity) * 50));
+            mValueSeekBar.setProgress((int) ((1.0f + mCameraParam.beauty.eyeDistanceIntensity) * 50));
         } else if (position == 10) {    // 眼角
-            mValueSeekBar.setProgress((int)((1.0f + mCameraParam.beauty.eyeCornerIntensity) * 50));
+            mValueSeekBar.setProgress((int) ((1.0f + mCameraParam.beauty.eyeCornerIntensity) * 50));
         } else if (position == 11) {    // 卧蚕
-            mValueSeekBar.setProgress((int)(mCameraParam.beauty.eyeFurrowsIntensity * 100));
+            mValueSeekBar.setProgress((int) (mCameraParam.beauty.eyeFurrowsIntensity * 100));
         } else if (position == 12) {    // 眼袋
-            mValueSeekBar.setProgress((int)(mCameraParam.beauty.eyeBagsIntensity * 100));
+            mValueSeekBar.setProgress((int) (mCameraParam.beauty.eyeBagsIntensity * 100));
         } else if (position == 13) {    // 亮眼
-            mValueSeekBar.setProgress((int)(mCameraParam.beauty.eyeBrightIntensity * 100));
+            mValueSeekBar.setProgress((int) (mCameraParam.beauty.eyeBrightIntensity * 100));
         } else if (position == 14) {    // 瘦鼻
-            mValueSeekBar.setProgress((int)(mCameraParam.beauty.noseThinIntensity * 100));
+            mValueSeekBar.setProgress((int) (mCameraParam.beauty.noseThinIntensity * 100));
         } else if (position == 15) {    // 鼻翼
-            mValueSeekBar.setProgress((int)(mCameraParam.beauty.alaeIntensity * 100));
+            mValueSeekBar.setProgress((int) (mCameraParam.beauty.alaeIntensity * 100));
         } else if (position == 16) {    // 长鼻
-            mValueSeekBar.setProgress((int)(mCameraParam.beauty.proboscisIntensity * 100));
+            mValueSeekBar.setProgress((int) (mCameraParam.beauty.proboscisIntensity * 100));
         } else if (position == 17) {    // 嘴型
-            mValueSeekBar.setProgress((int)(mCameraParam.beauty.mouthEnlargeIntensity * 100));
+            mValueSeekBar.setProgress((int) (mCameraParam.beauty.mouthEnlargeIntensity * 100));
         } else if (position == 18) {    // 美牙
-            mValueSeekBar.setProgress((int)(mCameraParam.beauty.teethBeautyIntensity * 100));
+            mValueSeekBar.setProgress((int) (mCameraParam.beauty.teethBeautyIntensity * 100));
         } else if (position == 19) {    // 眼高
-            mValueSeekBar.setProgress((int)(mCameraParam.beauty.eyeHeightIntensity * 100));
+            mValueSeekBar.setProgress((int) (mCameraParam.beauty.eyeHeightIntensity * 100));
         }
     }
 
     /**
      * 处理美颜参数
+     *
      * @param progress
      */
     private void processBeautyParam(int position, int progress) {
@@ -457,6 +507,7 @@ public class PreviewEffectFragment extends Fragment implements View.OnClickListe
 
     /**
      * 滚动到选中的滤镜位置上
+     *
      * @param index
      */
     public void scrollToCurrentFilter(int index) {
@@ -486,6 +537,7 @@ public class PreviewEffectFragment extends Fragment implements View.OnClickListe
 
     /**
      * 添加比较回调监听
+     *
      * @param listener
      */
     public void addOnCompareEffectListener(OnCompareEffectListener listener) {
@@ -499,12 +551,15 @@ public class PreviewEffectFragment extends Fragment implements View.OnClickListe
      */
     public interface OnFilterChangeListener {
 
-        /** 滤镜切换监听器 */
+        /**
+         * 滤镜切换监听器
+         */
         void onFilterChange(DynamicColor color);
     }
 
     /**
      * 添加滤镜监听器
+     *
      * @param listener
      */
     public void addOnFilterChangeListener(OnFilterChangeListener listener) {
@@ -518,16 +573,20 @@ public class PreviewEffectFragment extends Fragment implements View.OnClickListe
      */
     public interface OnMakeupChangeListener {
 
-        /** 彩妆切换监听器 */
+        /**
+         * 彩妆切换监听器
+         */
         void onMakeupChange(DynamicMakeup makeup);
     }
 
     /**
      * 添加彩妆切换监听器
+     *
      * @param listener
      */
     public void addOnMakeupChangeListener(OnMakeupChangeListener listener) {
         mOnMakeupChangeListener = listener;
     }
+
     private OnMakeupChangeListener mOnMakeupChangeListener;
 }

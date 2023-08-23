@@ -96,7 +96,42 @@
         <item>美牙</item>
         <item>眼高-</item>
     </string-array>
+    <string-array name="preview_beauty_info">
+        <item>磨皮</item>
+        <item>肤色</item>
+        <item>脸型</item>
+        <item>下巴</item>
+        <item>眼睛</item>
+        <item>鼻子</item>
+        <item>嘴唇</item>
+    </string-array>
+    <string-array name="preview_beauty_face">
+        <item>瘦脸</item>
+        <item>宽窄</item>
+        <item>长短</item>
+    </string-array>
+    <string-array name="preview_beauty_chin">
+        <item>宽窄</item>
+        <item>长短</item>
+    </string-array>
+    <string-array name="preview_beauty_eye">
+        <item>眼高</item>
+        <item>大眼</item>
+        <item>眼距</item>
+        <item>亮眼</item>
+    </string-array>
 
+    <string-array name="preview_beauty_nose">
+        <item>长短</item>
+        <item>鼻梁</item>
+        <item>鼻翼</item>
+    </string-array>
+
+    <string-array name="preview_beauty_lip">
+        <item>大小</item>
+        <item>上下</item>
+        <item>薄厚</item>
+    </string-array>
     <!-- 美妆 -->
     <string-array name="preview_makeup">
         <item>口红</item>
