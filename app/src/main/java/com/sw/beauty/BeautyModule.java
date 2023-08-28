@@ -5,6 +5,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
 import android.view.TextureView;
+import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.constraintlayout.widget.ConstraintLayout;
@@ -18,11 +19,14 @@ public class BeautyModule {
     private final PlayActivity mActivity;
     private CameraPreviewPresenterX2 mPreviewPresenter;
     private CameraTextureView mCameraTextureView;
+    private RecordModule recordModule;
 
     public BeautyModule(PlayActivity playActivity) {
         mActivity = playActivity;
         mMainHandler = new Handler(Looper.getMainLooper());
         mPreviewPresenter = new CameraPreviewPresenterX2(this);
+        recordModule = new RecordModule(playActivity, mPreviewPresenter);
+
         onCreate();
     }
 
@@ -37,6 +41,8 @@ public class BeautyModule {
                 new ConstraintLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
         mPreviewPresenter.onAttach(mActivity);
         mPreviewPresenter.onCreate();
+
+        recordModule.onCreate();
     }
 
 
@@ -112,7 +118,10 @@ public class BeautyModule {
     }
 
     public void resetAllLayout() {
-
+        // 录制完成走这里
+        mMainHandler.post(()-> {
+            recordModule.resetAllLayout();
+        });
     }
 
     public void showConcatProgressDialog() {

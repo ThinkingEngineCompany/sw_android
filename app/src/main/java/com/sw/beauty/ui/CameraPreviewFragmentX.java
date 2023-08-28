@@ -1089,6 +1089,11 @@ public class CameraPreviewFragmentX extends Fragment implements View.OnClickList
         }
 
         @Override
+        public void reqPer() {
+
+        }
+
+        @Override
         public void onRecordStop() {
             mPreviewPresenter.stopRecord();
         }

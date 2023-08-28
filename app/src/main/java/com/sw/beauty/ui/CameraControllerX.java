@@ -67,18 +67,20 @@ public class CameraControllerX implements ICameraController, Camera.PreviewCallb
     public CameraControllerX(@NonNull Activity activity) {
         Log.d(TAG, "CameraController: created！");
         mActivity = activity;
-        boolean ret_init = ncnnbodyseg.loadModel(mActivity.getAssets(), current_model, current_cpugpu, 1);
-        if (!ret_init) {
-            Log.e("MainActivity", "ncnnbodyseg loadModel failed");
-        }
-        releaseSurfaceTexture();
-        mOutputTexture = createDetachedSurfaceTexture();
-        ncnnbodyseg.setOutputSurface(mOutputTexture);
+//        boolean ret_init = ncnnbodyseg.loadModel(mActivity.getAssets(), current_model, current_cpugpu, 1);
+//        if (!ret_init) {
+//            Log.e("MainActivity", "ncnnbodyseg loadModel failed");
+//        }
+        // ncnnbodyseg.setOutputSurface(mOutputTexture);
     }
 
     @Override
     public void openCamera() {
         //ncnnbodyseg.closeCamera();
+        ncnnbodyseg.loadModel(mActivity.getAssets(), current_model, current_cpugpu, 1);
+        releaseSurfaceTexture();
+        mOutputTexture = createDetachedSurfaceTexture();
+        ncnnbodyseg.setOutputSurface(mOutputTexture);
         ncnnbodyseg.openCamera(facing);
         if (mSurfaceTextureListener != null) {
             mSurfaceTextureListener.onSurfaceTexturePrepared(mOutputTexture);
@@ -134,7 +136,7 @@ public class CameraControllerX implements ICameraController, Camera.PreviewCallb
     @Override
     public void closeCamera() {
         ncnnbodyseg.closeCamera();
-        releaseSurfaceTexture();
+        // releaseSurfaceTexture();
     }
 
     @Override

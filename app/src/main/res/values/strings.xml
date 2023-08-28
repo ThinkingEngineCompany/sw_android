@@ -1,4 +1,9 @@
 <resources>
     <string name="app_name">思维引擎</string>
     <string name="game_view_content_description" translatable="false">Game view</string>
+
+    <string name="delete_last_video_tips">删除上一段视频？</string>
+    <string name="btn_delete">删除</string>
+    <string name="btn_dialog_cancel">取消</string>
+    <string name="btn_dialog_ok">确定</string>
 </resources>

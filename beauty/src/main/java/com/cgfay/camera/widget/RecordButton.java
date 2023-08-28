@@ -100,6 +100,7 @@ public class RecordButton extends View {
 
     // 是否允许录制
     private boolean mRecordEnable;
+    private boolean mPerEnable;
 
     public RecordButton(Context context) {
         this(context, null);
@@ -190,9 +191,24 @@ public class RecordButton extends View {
         canvas.drawRoundRect(mRectF, mCorner, mCorner, mRectPaint);
     }
 
+    public boolean isPerEnable() {
+        return mPerEnable;
+    }
+
+    public void setPerEnable(boolean perEnable) {
+        this.mPerEnable = perEnable;
+    }
+
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        // 如果不允许录制，则进度拍照状态
+        // 如果不允许录制，则请求权限
+        if (!mPerEnable){
+            if (mRecordStateListener != null) {
+                mRecordStateListener.reqPer();
+            }
+            return super.onTouchEvent(event);
+        }
+        // 进入拍照
         if (!mRecordEnable) {
             return super.onTouchEvent(event);
         }
@@ -433,6 +449,8 @@ public class RecordButton extends View {
          * 录制开始
          */
         void onRecordStart();
+
+        void reqPer();
 
         /**
          * 录制停止

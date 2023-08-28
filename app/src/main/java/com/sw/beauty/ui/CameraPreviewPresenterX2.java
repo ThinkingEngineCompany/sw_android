@@ -7,6 +7,7 @@ import android.graphics.SurfaceTexture;
 import android.opengl.EGLContext;
 import android.text.TextUtils;
 import android.util.Log;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.FragmentActivity;
@@ -55,6 +56,7 @@ import java.util.List;
 
 /**
  * 预览的presenter
+ *
  * @author CainHuang
  * @date 2019/7/3
  */
@@ -361,7 +363,9 @@ public class CameraPreviewPresenterX2 extends PreviewPresenter<BeautyModule>
             width = mCameraController.getPreviewWidth();
             height = mCameraController.getPreviewHeight();
         }
-        mVideoParams.setVideoSize(width, height);
+        // TODO 设置更合理的宽和高
+//        mVideoParams.setVideoSize(width, height);
+        mVideoParams.setVideoSize(1080, 2400);
 //        mCameraRenderer.setTextureSize(width, height);// 1280 720
         mCameraRenderer.setTextureSize(1080, 2400);
     }
@@ -560,7 +564,7 @@ public class CameraPreviewPresenterX2 extends PreviewPresenter<BeautyModule>
             final String currentFile = generateOutputPath();
             FileUtils.createFile(currentFile);
             mCommandEditor.execCommand(CainCommandEditor.mergeAudioVideo(mVideoInfo.getFileName(),
-                    mAudioInfo.getFileName(), currentFile),
+                            mAudioInfo.getFileName(), currentFile),
                     (result) -> {
                         if (result == 0) {
                             mVideoList.add(new MediaInfo(currentFile, mVideoInfo.getDuration()));
@@ -609,11 +613,14 @@ public class CameraPreviewPresenterX2 extends PreviewPresenter<BeautyModule>
 
         if (mVideoList.size() == 1) {
             String path = mVideoList.get(0).getFileName();
-            String outputPath = generateOutputPath();
-            FileUtils.copyFile(path, outputPath);
-            Intent intent = new Intent(mActivity, VideoEditActivity.class);
-            intent.putExtra(VideoEditActivity.VIDEO_PATH, outputPath);
-            mActivity.startActivity(intent);
+//            String outputPath = generateOutputPath();
+//            FileUtils.copyFile(path, outputPath);
+            Log.e("xie", "outputPath:" + path);
+            Toast.makeText(mActivity, "录制成功:" + path, Toast.LENGTH_LONG).show();
+            mVideoList.clear();
+//            Intent intent = new Intent(mActivity, VideoEditActivity.class);
+//            intent.putExtra(VideoEditActivity.VIDEO_PATH, outputPath);
+//            mActivity.startActivity(intent);
         } else {
             getTarget().showConcatProgressDialog();
             List<String> videos = new ArrayList<>();
@@ -637,6 +644,7 @@ public class CameraPreviewPresenterX2 extends PreviewPresenter<BeautyModule>
 
     /**
      * 创建合成的视频文件名
+     *
      * @return
      */
     public String generateOutputPath() {
@@ -645,6 +653,7 @@ public class CameraPreviewPresenterX2 extends PreviewPresenter<BeautyModule>
 
     /**
      * 打开视频编辑页面
+     *
      * @param path
      */
     public void onOpenVideoEditPage(String path) {
@@ -665,8 +674,10 @@ public class CameraPreviewPresenterX2 extends PreviewPresenter<BeautyModule>
     }
 
     // ------------------------------------ 渲染fps回调 ------------------------------------------
+
     /**
      * fps数值回调
+     *
      * @param fps
      */
     @Override

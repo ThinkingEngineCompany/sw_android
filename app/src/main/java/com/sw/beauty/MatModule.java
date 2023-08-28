@@ -18,7 +18,7 @@ public class MatModule implements SurfaceHolder.Callback {
     public static final int REQUEST_CAMERA = 100;
     private PlayActivity playActivity;
     private SurfaceView cameraView;
-    private NcnnBodyseg ncnnbodyseg = new NcnnBodyseg();
+    private final NcnnBodyseg ncnnbodyseg = new NcnnBodyseg();
     private int facing = 0;
 
     public MatModule(PlayActivity playActivity) {
@@ -53,10 +53,4 @@ public class MatModule implements SurfaceHolder.Callback {
 
     }
 
-    public void onResume() {
-        if (ContextCompat.checkSelfPermission(playActivity.getApplicationContext(), Manifest.permission.CAMERA) == PackageManager.PERMISSION_DENIED) {
-            ActivityCompat.requestPermissions(playActivity, new String[]{Manifest.permission.CAMERA}, REQUEST_CAMERA);
-        }
-        ncnnbodyseg.openCamera(facing);
-    }
 }

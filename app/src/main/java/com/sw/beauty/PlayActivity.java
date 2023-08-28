@@ -1,8 +1,13 @@
 package com.sw.beauty;
 
+import static android.Manifest.permission.CAMERA;
+import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
+
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.util.Log;
@@ -22,11 +27,13 @@ import com.unity3d.player.UnityPlayer;
 
 public class PlayActivity extends AppCompatActivity implements
         IUnityPlayerLifecycleEvents {
+    private static final int AUDIO_PERMISSION_REQUEST_CODE = 0;
     private long exitTime = 0;
     protected UnityPlayer mUnityPlayer;
-    //    private MatModule mat;
+    private MatModule mat;
     private BeautyModule beauty;
     public static final String EXTRA_SCENE_FILE = "extra_scene_file";
+    private OnPermissionSuccess onPermissionSuccess;
 
     @SuppressLint("MissingInflatedId")
     @Override
@@ -40,9 +47,17 @@ public class PlayActivity extends AppCompatActivity implements
         findViewById(R.id.back).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                finish();
+            }
+        });
+        findViewById(R.id.load).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
                 //finish();
+//                UnityPlayer.UnitySendMessage("Main Camera", "loadDep",
+//                        FileUtils.getFilePath("terrain.sw"));
                 UnityPlayer.UnitySendMessage("Main Camera", "loadAndUseScene",
-                        FileUtils.getFilePath(FileUtils.getModelFileNameById("4_Feel")));
+                        FileUtils.getFilePath("light_scene.sw"));
             }
         });
         mUnityPlayer = unity.mUnityPlayer;
@@ -79,7 +94,7 @@ public class PlayActivity extends AppCompatActivity implements
         if (MultiWindowSupport.getAllowResizableWindow(this) && !MultiWindowSupport.isMultiWindowModeChangedToTrue(this))
             return;
 
-       mUnityPlayer.resume();
+        mUnityPlayer.resume();
     }
 
     @Override
@@ -88,7 +103,7 @@ public class PlayActivity extends AppCompatActivity implements
         beauty.onStart();
         if (!MultiWindowSupport.getAllowResizableWindow(this))
             return;
-       mUnityPlayer.resume();
+        mUnityPlayer.resume();
     }
 
     @Override
@@ -116,7 +131,7 @@ public class PlayActivity extends AppCompatActivity implements
     protected void onDestroy() {
         try {
             mUnityPlayer.destroy();
-        } catch (Exception e){
+        } catch (Exception e) {
             Log.e("xie", "e:" + e.getMessage());
         }
         super.onDestroy();
@@ -186,5 +201,28 @@ public class PlayActivity extends AppCompatActivity implements
             starter.putExtra(EXTRA_SCENE_FILE, FileUtils.getModelFile(model));
         }
         context.startActivity(starter);
+    }
+
+    public void checkAndRequestRecordPermission(OnPermissionSuccess onPermissionSuccess) {
+        if (checkSelfPermission(Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(new String[]{Manifest.permission.RECORD_AUDIO}, AUDIO_PERMISSION_REQUEST_CODE);
+            this.onPermissionSuccess = onPermissionSuccess;
+        } else {
+            onPermissionSuccess.onOK();
+        }
+    }
+
+    public interface OnPermissionSuccess {
+        void onOK();
+    }
+
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        if (requestCode == AUDIO_PERMISSION_REQUEST_CODE && grantResults.length > 0
+                && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            if (onPermissionSuccess != null) {
+                onPermissionSuccess.onOK();
+            }
+        }
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 }
