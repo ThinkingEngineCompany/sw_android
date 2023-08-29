@@ -70,7 +70,7 @@ public class PreviewBeautyAdapter extends RecyclerView.Adapter<PreviewBeautyAdap
                     bd.get(position).iconRes, null));
             holder.imageView.setVisibility(View.VISIBLE);
         }
-        if (position == mSelected && (bd.get(position).type == 0 || bd.get(position).type == 3)) {
+        if (position == mSelected && bd.get(position).type == 0) {
             holder.beautyPanel.setBackgroundResource(R.drawable.ic_camera_effect_selected);
         } else {
             holder.beautyPanel.setBackgroundResource(0);
@@ -83,9 +83,8 @@ public class PreviewBeautyAdapter extends RecyclerView.Adapter<PreviewBeautyAdap
                 }
 
                 int lastSelected = mSelected;
-                // Index: 8, Size: 7
                 if (bd.get(p).type == 1 || bd.get(p).type == 2) {
-                    // 保持原来的选择
+                    mSelected = -1;
                 } else {
                     mSelected = p;
                 }
@@ -99,9 +98,7 @@ public class PreviewBeautyAdapter extends RecyclerView.Adapter<PreviewBeautyAdap
             }
         });
     }
-    public void resetSelectedItem(){
-        mSelected = -1;
-    }
+
     @Override
     public int getItemCount() {
         return (bd == null) ? 0 : bd.size();
