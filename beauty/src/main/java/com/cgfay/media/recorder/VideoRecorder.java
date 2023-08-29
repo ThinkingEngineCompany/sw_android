@@ -3,6 +3,7 @@ package com.cgfay.media.recorder;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
+import android.text.TextUtils;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -19,6 +20,7 @@ import java.nio.FloatBuffer;
 
 /**
  * 视频录制器
+ *
  * @author CainHuang
  * @date 2019/6/30
  */
@@ -63,6 +65,7 @@ public final class VideoRecorder implements Runnable, VideoEncoder.OnEncodingLis
 
     /**
      * 设置录制监听器
+     *
      * @param listener
      */
     public void setOnRecordListener(OnRecordListener listener) {
@@ -71,6 +74,7 @@ public final class VideoRecorder implements Runnable, VideoEncoder.OnEncodingLis
 
     /**
      * 开始录制
+     *
      * @param params 录制参数
      */
     public void startRecord(VideoParams params) {
@@ -83,7 +87,7 @@ public final class VideoRecorder implements Runnable, VideoEncoder.OnEncodingLis
                 return;
             }
             mRunning = true;
-            new Thread(this, "VideoRecorder").start();
+            new Thread(this, TextUtils.isEmpty(tName) ? "VideoRecorder" : tName).start();
             while (!mReady) {
                 try {
                     mReadyFence.wait();
@@ -119,6 +123,7 @@ public final class VideoRecorder implements Runnable, VideoEncoder.OnEncodingLis
 
     /**
      * 判断是否正在录制
+     *
      * @return
      */
     public boolean isRecording() {
@@ -129,6 +134,7 @@ public final class VideoRecorder implements Runnable, VideoEncoder.OnEncodingLis
 
     /**
      * 录制帧可用状态
+     *
      * @param texture
      * @param timestamp
      */
@@ -175,6 +181,12 @@ public final class VideoRecorder implements Runnable, VideoEncoder.OnEncodingLis
         }
     }
 
+    String tName;
+
+    public void setThreadName(String t) {
+        tName = t;
+    }
+
     /**
      * 录制Handler
      */
@@ -211,7 +223,7 @@ public final class VideoRecorder implements Runnable, VideoEncoder.OnEncodingLis
                 case MSG_FRAME_AVAILABLE: {
                     long timestamp = (((long) inputMessage.arg1) << 32) |
                             (((long) inputMessage.arg2) & 0xffffffffL);
-                    encoder.onRecordFrameAvailable((int)obj, timestamp);
+                    encoder.onRecordFrameAvailable((int) obj, timestamp);
                     break;
                 }
 
@@ -228,6 +240,7 @@ public final class VideoRecorder implements Runnable, VideoEncoder.OnEncodingLis
 
     /**
      * 开始录制
+     *
      * @param params
      */
     private void onStartRecord(@NonNull VideoParams params) {
@@ -282,14 +295,18 @@ public final class VideoRecorder implements Runnable, VideoEncoder.OnEncodingLis
 
         // 录制完成回调
         if (mRecordListener != null) {
-            mRecordListener.onRecordFinish(new RecordInfo(mVideoEncoder.getVideoParams().getVideoPath(),
-                    mVideoEncoder.getDuration(), MediaType.VIDEO));
+            RecordInfo info = new RecordInfo(mVideoEncoder.getVideoParams().getVideoPath(),
+                    mVideoEncoder.getDuration(), MediaType.VIDEO);
+            info.setNeedMerge(mVideoEncoder.getVideoParams().isNeedMerge());
+            info.setMergeName(mVideoEncoder.getVideoParams().getPath());
+            mRecordListener.onRecordFinish(info);
         }
         mVideoEncoder = null;
     }
 
     /**
      * 录制帧可用
+     *
      * @param texture
      * @param timestampNanos
      */
@@ -318,6 +335,7 @@ public final class VideoRecorder implements Runnable, VideoEncoder.OnEncodingLis
 
     /**
      * 绘制编码一帧数据
+     *
      * @param texture
      * @param timestampNanos
      */
@@ -332,6 +350,7 @@ public final class VideoRecorder implements Runnable, VideoEncoder.OnEncodingLis
 
     /**
      * 计算时间戳
+     *
      * @return
      */
     private long getPTS(long timestampNanos) {

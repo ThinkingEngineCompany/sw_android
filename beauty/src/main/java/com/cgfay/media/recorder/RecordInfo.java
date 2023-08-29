@@ -12,6 +12,24 @@ public class RecordInfo {
     private long duration; // 暂时录音的时长信息为-1，以视频信息为准
 
     private MediaType type;
+    private boolean isNeedMerge = true;
+
+    public boolean isNeedMerge() {
+        return isNeedMerge;
+    }
+    public String mergeName;
+
+    public String getMergeName() {
+        return mergeName;
+    }
+
+    public void setMergeName(String mergeName) {
+        this.mergeName = mergeName;
+    }
+
+    public void setNeedMerge(boolean needMerge) {
+        isNeedMerge = needMerge;
+    }
 
     public RecordInfo(String fileName, long duration, MediaType type) {
         this.fileName = fileName;

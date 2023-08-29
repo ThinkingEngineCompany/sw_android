@@ -19,6 +19,7 @@ public class BeautyModule {
     private final PlayActivity mActivity;
     private CameraPreviewPresenterX2 mPreviewPresenter;
     private CameraTextureView mCameraTextureView;
+    private CameraTextureView mRawCameraTextureView;
     private RecordModule recordModule;
 
     public BeautyModule(PlayActivity playActivity) {
@@ -33,11 +34,17 @@ public class BeautyModule {
     public void onCreate() {
         ConstraintLayout constraintLayout = mActivity.findViewById(R.id.parent);
         mCameraTextureView = new CameraTextureView(mActivity);
+        mRawCameraTextureView = new CameraTextureView(mActivity);
+
 //        mCameraTextureView.addOnTouchScroller(mTouchScroller);
 //        mCameraTextureView.addMultiClickListener(mMultiClickListener);
+
         mCameraTextureView.setSurfaceTextureListener(mSurfaceTextureListener);
+        mRawCameraTextureView.setSurfaceTextureListener(mRawSurfaceTextureListener);
         mCameraTextureView.setOpaque(false);
         constraintLayout.addView(mCameraTextureView, 1,
+                new ConstraintLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        constraintLayout.addView(mRawCameraTextureView, 1,
                 new ConstraintLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
         mPreviewPresenter.onAttach(mActivity);
         mPreviewPresenter.onCreate();
@@ -100,7 +107,32 @@ public class BeautyModule {
 
         }
     };
+    private TextureView.SurfaceTextureListener mRawSurfaceTextureListener = new TextureView.SurfaceTextureListener() {
+        @Override
+        public void onSurfaceTextureAvailable(SurfaceTexture surface, int width, int height) {
+            mPreviewPresenter.onRawSurfaceCreated(surface);
+            mPreviewPresenter.onRawSurfaceChanged(width, height);
+            Log.d(TAG, "onSurfaceTextureAvailable: ");
+        }
 
+        @Override
+        public void onSurfaceTextureSizeChanged(SurfaceTexture surface, int width, int height) {
+            mPreviewPresenter.onRawSurfaceChanged(width, height);
+            Log.d(TAG, "onSurfaceTextureSizeChanged: ");
+        }
+
+        @Override
+        public boolean onSurfaceTextureDestroyed(SurfaceTexture surface) {
+            mPreviewPresenter.onRawSurfaceDestroyed();
+            Log.d(TAG, "onSurfaceTextureDestroyed: ");
+            return true;
+        }
+
+        @Override
+        public void onSurfaceTextureUpdated(SurfaceTexture surface) {
+
+        }
+    };
     public void deleteProgressSegment() {
 
     }

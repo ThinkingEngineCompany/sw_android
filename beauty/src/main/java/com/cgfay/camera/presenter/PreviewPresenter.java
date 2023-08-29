@@ -27,6 +27,7 @@ public abstract class PreviewPresenter<T> extends IPresenter<T> {
      * @param context SharedContext
      */
     public abstract void onBindSharedContext(EGLContext context);
+    public abstract void onBindRawSharedContext(EGLContext context);
 
     /**
      * 录制帧可用
@@ -34,6 +35,8 @@ public abstract class PreviewPresenter<T> extends IPresenter<T> {
      * @param timestamp
      */
     public abstract void onRecordFrameAvailable(int texture, long timestamp);
+
+    public abstract void onRecordRawFrameAvailable(int texture, long timestamp);
 
     /**
      * SurfaceTexture 创建

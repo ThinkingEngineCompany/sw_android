@@ -4,6 +4,7 @@ import android.graphics.SurfaceTexture;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
+import android.util.Log;
 import android.view.Surface;
 import android.view.SurfaceHolder;
 
@@ -20,13 +21,15 @@ import java.util.ArrayList;
 public class CameraRenderHandler extends Handler {
 
     static final int MSG_INIT = 0x01;               // 初始化
+    static final int MSG_RAW_INIT = 0x00;               // 初始化
     static final int MSG_DISPLAY_CHANGE = 0x02;     // 显示发生变化
     static final int MSG_DESTROY = 0x03;            // 销毁
     static final int MSG_RENDER = 0x04;             // 渲染
-    static final int MSG_CHANGE_FILTER = 0x05;      // 切换滤镜
-    static final int MSG_CHANGE_MAKEUP = 0x06;      // 切换彩妆
-    static final int MSG_CHANGE_RESOURCE = 0x07;    // 切换贴纸资源
-    static final int MSG_CHANGE_EDGE_BLUR = 0x08;   // 边框模糊功能
+    static final int MSG_RAW_RENDER = 0x05;             // 渲染
+    static final int MSG_CHANGE_FILTER = 0x06;      // 切换滤镜
+    static final int MSG_CHANGE_MAKEUP = 0x07;      // 切换彩妆
+    static final int MSG_CHANGE_RESOURCE = 0x08;    // 切换贴纸资源
+    static final int MSG_CHANGE_EDGE_BLUR = 0x09;   // 边框模糊功能
 
     // 渲染事件处理队列
     private ArrayList<Runnable> mEventQueue = new ArrayList<Runnable>();
@@ -59,6 +62,16 @@ public class CameraRenderHandler extends Handler {
                 }
                 break;
 
+            case MSG_RAW_INIT:
+                if (msg.obj instanceof SurfaceHolder) {
+                    renderer.initRender(((SurfaceHolder)msg.obj).getSurface());
+                } else if (msg.obj instanceof Surface) {
+                    renderer.initRender((Surface)msg.obj);
+                } else if (msg.obj instanceof SurfaceTexture) {
+                    renderer.initRawRender((SurfaceTexture) msg.obj);
+                }
+                break;
+
             case MSG_DISPLAY_CHANGE:
                 renderer.setDisplaySize(msg.arg1, msg.arg2);
                 break;
@@ -71,6 +84,10 @@ public class CameraRenderHandler extends Handler {
             // 渲染一帧数据
             case MSG_RENDER:
                 renderer.onDrawFrame();
+                break;
+            // 渲染一帧数据
+            case MSG_RAW_RENDER:
+                renderer.onDrawRawFrame();
                 break;
 
             // 切换滤镜
@@ -94,6 +111,7 @@ public class CameraRenderHandler extends Handler {
                 } else if (msg.obj instanceof DynamicColor) {
                     renderer.changeDynamicResource((DynamicColor) msg.obj);
                 } else if (msg.obj instanceof DynamicSticker) {
+                    Log.e("xie", "obj: changeDynamicResource...");
                     renderer.changeDynamicResource((DynamicSticker) msg.obj);
                 }
                 break;

@@ -39,10 +39,21 @@ public class VideoParams {
     private SpeedMode mSpeedMode;
     private long mMaxDuration; // us
     private EGLContext mEglContext;
-
+    private EGLContext mRawEglContext;
+    // 最终带抠像的视频目录-跟原始视频名称对齐
+    private String path;
+    private boolean isNeedMerge = true;
     public VideoParams() {
         mBitRate = BIT_RATE;
         mSpeedMode = SpeedMode.MODE_NORMAL;
+    }
+
+    public boolean isNeedMerge() {
+        return isNeedMerge;
+    }
+
+    public void setNeedMerge(boolean needMerge) {
+        isNeedMerge = needMerge;
     }
 
     @Override
@@ -121,5 +132,42 @@ public class VideoParams {
 
     public EGLContext getEglContext() {
         return mEglContext;
+    }
+
+    public String getPath() {
+        return path;
+    }
+
+    public void setPath(String path) {
+        this.path = path;
+    }
+
+    public EGLContext getRawEglContext() {
+        return mRawEglContext;
+    }
+
+    public void setRawEglContext(EGLContext mRawEglContext) {
+        this.mRawEglContext = mRawEglContext;
+    }
+
+    public VideoParams(int mVideoWidth, int mVideoHeight, int mBitRate, String mVideoPath, SpeedMode mSpeedMode, long mMaxDuration, EGLContext mEglContext) {
+        this.mVideoWidth = mVideoWidth;
+        this.mVideoHeight = mVideoHeight;
+        this.mBitRate = mBitRate;
+        this.mVideoPath = mVideoPath;
+        this.mSpeedMode = mSpeedMode;
+        this.mMaxDuration = mMaxDuration;
+        this.mEglContext = mEglContext;
+    }
+
+    public VideoParams(VideoParams vp, String path) {
+        this.mVideoWidth = vp.mVideoWidth;
+        this.mVideoHeight = vp.mVideoHeight;
+        this.mBitRate = vp.mBitRate;
+        this.mVideoPath = path;
+        this.mSpeedMode = vp.mSpeedMode;
+        this.mMaxDuration = vp.mMaxDuration;
+        this.mEglContext = vp.mRawEglContext;
+        this.isNeedMerge = false;
     }
 }

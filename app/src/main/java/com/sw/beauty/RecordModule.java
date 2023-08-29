@@ -45,8 +45,6 @@ public class RecordModule implements View.OnClickListener {
         mBtnNext.setOnClickListener(this);
 
         if (mBtnRecord != null) {
-            Log.e("xie", "audio per:" +
-                    (mActivity.checkSelfPermission(Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED));
             mBtnRecord.setPerEnable(
                     mActivity.checkSelfPermission(Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED);
             mBtnRecord.setRecordEnable(true);

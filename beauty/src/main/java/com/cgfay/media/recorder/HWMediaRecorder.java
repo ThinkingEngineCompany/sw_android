@@ -4,6 +4,7 @@ import android.util.Log;
 
 /**
  * 媒体录制器，支持倍速录制
+ *
  * @author CainHuang
  * @date 2019/6/30
  */
@@ -18,6 +19,7 @@ public class HWMediaRecorder implements OnRecordListener {
     private final AudioRecorder mAudioRecorder;
     // 视频录制器
     private final VideoRecorder mVideoRecorder;
+    private final VideoRecorder mVideoRecorder2;
     // 是否支持音频录制
     private boolean mAudioEnable = true;
     // 打开的录制器个数
@@ -28,11 +30,15 @@ public class HWMediaRecorder implements OnRecordListener {
 
     // 录制状态回调
     private OnRecordStateListener mRecordStateListener;
+    private String rawPath;
 
     public HWMediaRecorder(OnRecordStateListener listener) {
         mRecordStateListener = listener;
         mVideoRecorder = new VideoRecorder();
+        mVideoRecorder2 = new VideoRecorder();
+        mVideoRecorder2.setThreadName("vrecorder2");
         mVideoRecorder.setOnRecordListener(this);
+        mVideoRecorder2.setOnRecordListener(this);
 
         mAudioRecorder = new AudioRecorder();
         mAudioRecorder.setOnRecordListener(this);
@@ -44,11 +50,13 @@ public class HWMediaRecorder implements OnRecordListener {
      */
     public void release() {
         mVideoRecorder.release();
+        mVideoRecorder2.release();
         mAudioRecorder.release();
     }
 
     /**
      * 设置是否允许音频录制
+     *
      * @param enable
      */
     public void setEnableAudio(boolean enable) {
@@ -57,6 +65,7 @@ public class HWMediaRecorder implements OnRecordListener {
 
     /**
      * 是否允许录制音频
+     *
      * @return
      */
     public boolean enableAudio() {
@@ -65,7 +74,6 @@ public class HWMediaRecorder implements OnRecordListener {
 
     /**
      * 开始录制
-     *
      */
     public void startRecord(VideoParams videoParams, AudioParams audioParams) {
         if (VERBOSE) {
@@ -73,6 +81,10 @@ public class HWMediaRecorder implements OnRecordListener {
         }
 
         mVideoRecorder.startRecord(videoParams);
+
+        // rawPath
+        mVideoRecorder2.startRecord(new VideoParams(videoParams,
+                videoParams.getPath().replace(".mp4", "raw.mp4")));
 
         if (mAudioEnable) {
             try {
@@ -95,6 +107,9 @@ public class HWMediaRecorder implements OnRecordListener {
         if (mVideoRecorder != null) {
             mVideoRecorder.stopRecord();
         }
+        if (mVideoRecorder2 != null) {
+            mVideoRecorder2.stopRecord();
+        }
         if (mAudioEnable) {
             if (mAudioRecorder != null) {
                 mAudioRecorder.stopRecord();
@@ -115,20 +130,30 @@ public class HWMediaRecorder implements OnRecordListener {
             mVideoRecorder.frameAvailable(texture, timestamp);
         }
     }
+    public void rawFrameAvailable(int texture, long timestamp) {
+        if (mVideoRecorder2 != null) {
+            mVideoRecorder2.frameAvailable(texture, timestamp);
+        }
+    }
 
     /**
      * 判断是否正在录制阶段
+     *
      * @return
      */
     public boolean isRecording() {
         if (mVideoRecorder != null) {
             return mVideoRecorder.isRecording();
         }
+        if (mVideoRecorder2 != null) {
+            return mVideoRecorder2.isRecording();
+        }
         return false;
     }
 
     /**
      * 录制开始
+     *
      * @param type
      */
     @Override
@@ -145,6 +170,7 @@ public class HWMediaRecorder implements OnRecordListener {
 
     /**
      * 正在录制
+     *
      * @param type
      * @param duration
      */
@@ -159,6 +185,7 @@ public class HWMediaRecorder implements OnRecordListener {
 
     /**
      * 录制完成
+     *
      * @param info
      */
     @Override
@@ -166,5 +193,9 @@ public class HWMediaRecorder implements OnRecordListener {
         if (mRecordStateListener != null) {
             mRecordStateListener.onRecordFinish(info);
         }
+    }
+
+    public void setRawPathName(String generateOutputPath) {
+        rawPath = generateOutputPath;
     }
 }

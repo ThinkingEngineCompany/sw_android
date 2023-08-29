@@ -219,10 +219,20 @@ public class CameraPreviewPresenterX extends PreviewPresenter<CameraPreviewFragm
     }
 
     @Override
+    public void onBindRawSharedContext(EGLContext context) {
+
+    }
+
+    @Override
     public void onRecordFrameAvailable(int texture, long timestamp) {
         if (mOperateStarted && mHWMediaRecorder != null && mHWMediaRecorder.isRecording()) {
             mHWMediaRecorder.frameAvailable(texture, timestamp);
         }
+    }
+
+    @Override
+    public void onRecordRawFrameAvailable(int texture, long timestamp) {
+
     }
 
     @Override

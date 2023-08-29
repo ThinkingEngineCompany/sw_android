@@ -22,6 +22,7 @@ public interface ICameraController {
      * @param listener
      */
     void setOnSurfaceTextureListener(OnSurfaceTextureListener listener);
+    void setOnRawSurfaceTextureListener(OnSurfaceTextureListener listener);
 
     /**
      * 设置预览回调
@@ -32,6 +33,7 @@ public interface ICameraController {
      * 设置纹理更新回调
      */
     void setOnFrameAvailableListener(OnFrameAvailableListener listener);
+    void setOnRawFrameAvailableListener(OnFrameAvailableListener listener);
 
     /**
      * 切换相机

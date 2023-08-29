@@ -184,6 +184,11 @@ public class CameraXController implements ICameraController {
     }
 
     @Override
+    public void setOnRawSurfaceTextureListener(OnSurfaceTextureListener listener) {
+
+    }
+
+    @Override
     public void setPreviewCallback(PreviewCallback callback) {
         mPreviewCallback = callback;
     }
@@ -191,6 +196,11 @@ public class CameraXController implements ICameraController {
     @Override
     public void setOnFrameAvailableListener(OnFrameAvailableListener listener) {
         mFrameAvailableListener = listener;
+    }
+
+    @Override
+    public void setOnRawFrameAvailableListener(OnFrameAvailableListener listener) {
+
     }
 
     @SuppressLint("RestrictedApi")

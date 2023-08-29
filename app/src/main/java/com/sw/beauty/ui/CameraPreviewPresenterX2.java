@@ -109,6 +109,7 @@ public class CameraPreviewPresenterX2 extends PreviewPresenter<BeautyModule>
 
     // 渲染器
     private final CameraRenderer mCameraRenderer;
+    private final CameraRenderer mRawCameraRenderer;
 
     // 带游戏场景
     public CameraPreviewPresenterX2(BeautyModule target) {
@@ -116,6 +117,7 @@ public class CameraPreviewPresenterX2 extends PreviewPresenter<BeautyModule>
         mCameraParam = CameraParam.getInstance();
 
         mCameraRenderer = new CameraRenderer(this, false);
+        mRawCameraRenderer = new CameraRenderer(this, false);
 
         // 视频录制器
         mVideoParams = new VideoParams();
@@ -131,6 +133,7 @@ public class CameraPreviewPresenterX2 extends PreviewPresenter<BeautyModule>
         mAudioParams.setAudioPath(PathConstraints.getAudioTempPath(mActivity));
 
         mCameraRenderer.initRenderer();
+        mRawCameraRenderer.initRenderer();
 
 //        // 备注：目前支持CameraX的渲染流程，但CameraX回调预览帧数据有些问题，人脸关键点SDK检测返回的数据错乱，暂不建议在商用项目中使用CameraX
 //        if (CameraApi.hasCamera2(mActivity)) {
@@ -143,8 +146,20 @@ public class CameraPreviewPresenterX2 extends PreviewPresenter<BeautyModule>
 //        mCameraController = new CameraController(mActivity);
         mCameraController.setPreviewCallback(this);
         mCameraController.setOnFrameAvailableListener(this);
-        mCameraController.setOnSurfaceTextureListener(this);
 
+        mCameraController.setOnRawFrameAvailableListener(new OnFrameAvailableListener() {
+            @Override
+            public void onFrameAvailable(SurfaceTexture surfaceTexture) {
+                mRawCameraRenderer.requestRawRender();
+            }
+        });
+        mCameraController.setOnSurfaceTextureListener(this);
+        mCameraController.setOnRawSurfaceTextureListener(new OnSurfaceTextureListener() {
+            @Override
+            public void onSurfaceTexturePrepared(@NonNull SurfaceTexture surfaceTexture) {
+                mRawCameraRenderer.bindInputSurfaceTexture(surfaceTexture);
+            }
+        });
         if (BrightnessUtils.getSystemBrightnessMode(mActivity) == 1) {
             mCameraParam.brightness = -1;
         } else {
@@ -175,6 +190,7 @@ public class CameraPreviewPresenterX2 extends PreviewPresenter<BeautyModule>
     public void onPause() {
         super.onPause();
         mCameraRenderer.onPause();
+        mRawCameraRenderer.onPause();
         closeCamera();
         mCameraParam.captureCallback = null;
         mCameraParam.fpsCallback = null;
@@ -205,6 +221,7 @@ public class CameraPreviewPresenterX2 extends PreviewPresenter<BeautyModule>
     public void onDetach() {
         mActivity = null;
         mCameraRenderer.destroyRenderer();
+        mRawCameraRenderer.destroyRenderer();
     }
 
     @NonNull
@@ -219,10 +236,21 @@ public class CameraPreviewPresenterX2 extends PreviewPresenter<BeautyModule>
         Log.d(TAG, "onBindSharedContext: ");
     }
 
+    public void onBindRawSharedContext(EGLContext context) {
+        mVideoParams.setRawEglContext(context);
+        Log.d(TAG, "onBindSharedContext: ");
+    }
+
     @Override
     public void onRecordFrameAvailable(int texture, long timestamp) {
         if (mOperateStarted && mHWMediaRecorder != null && mHWMediaRecorder.isRecording()) {
             mHWMediaRecorder.frameAvailable(texture, timestamp);
+        }
+    }
+
+    public void onRecordRawFrameAvailable(int texture, long timestamp) {
+        if (mOperateStarted && mHWMediaRecorder != null && mHWMediaRecorder.isRecording()) {
+            mHWMediaRecorder.rawFrameAvailable(texture, timestamp);
         }
     }
 
@@ -231,14 +259,25 @@ public class CameraPreviewPresenterX2 extends PreviewPresenter<BeautyModule>
         mCameraRenderer.onSurfaceCreated(surfaceTexture);
     }
 
+    public void onRawSurfaceCreated(SurfaceTexture surfaceTexture) {
+        mRawCameraRenderer.onRawSurfaceCreated(surfaceTexture);
+    }
+
     @Override
     public void onSurfaceChanged(int width, int height) {
         mCameraRenderer.onSurfaceChanged(width, height);
     }
 
+    public void onRawSurfaceChanged(int width, int height) {
+        mRawCameraRenderer.onSurfaceChanged(width, height);
+    }
+
     @Override
     public void onSurfaceDestroyed() {
         mCameraRenderer.onSurfaceDestroyed();
+    }
+    public void onRawSurfaceDestroyed() {
+        mRawCameraRenderer.onSurfaceDestroyed();
     }
 
     @Override
@@ -368,6 +407,8 @@ public class CameraPreviewPresenterX2 extends PreviewPresenter<BeautyModule>
         mVideoParams.setVideoSize(1080, 2400);
 //        mCameraRenderer.setTextureSize(width, height);// 1280 720
         mCameraRenderer.setTextureSize(1080, 2400);
+
+        mRawCameraRenderer.setTextureSize(1080, 2400);
     }
 
     /**
@@ -395,6 +436,7 @@ public class CameraPreviewPresenterX2 extends PreviewPresenter<BeautyModule>
         if (mHWMediaRecorder == null) {
             mHWMediaRecorder = new HWMediaRecorder(this);
         }
+        mVideoParams.setPath(generateOutputPath());
         mHWMediaRecorder.startRecord(mVideoParams, mAudioParams);
         mOperateStarted = true;
     }
@@ -548,6 +590,9 @@ public class CameraPreviewPresenterX2 extends PreviewPresenter<BeautyModule>
 
     @Override
     public void onRecordFinish(RecordInfo info) {
+        if(!info.isNeedMerge()){
+            return;
+        }
         if (info.getType() == MediaType.AUDIO) {
             mAudioInfo = info;
         } else if (info.getType() == MediaType.VIDEO) {
@@ -561,7 +606,7 @@ public class CameraPreviewPresenterX2 extends PreviewPresenter<BeautyModule>
             return;
         }
         if (mHWMediaRecorder.enableAudio()) {
-            final String currentFile = generateOutputPath();
+            final String currentFile = mVideoInfo.getMergeName();
             FileUtils.createFile(currentFile);
             mCommandEditor.execCommand(CainCommandEditor.mergeAudioVideo(mVideoInfo.getFileName(),
                             mAudioInfo.getFileName(), currentFile),

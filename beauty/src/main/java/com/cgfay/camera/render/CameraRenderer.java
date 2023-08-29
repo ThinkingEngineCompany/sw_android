@@ -125,7 +125,10 @@ public class CameraRenderer extends Thread {
         Handler handler = getHandler();
         handler.sendMessage(handler.obtainMessage(CameraRenderHandler.MSG_INIT, surfaceTexture));
     }
-
+    public void onRawSurfaceCreated(SurfaceTexture surfaceTexture) {
+        Handler handler = getHandler();
+        handler.sendMessage(handler.obtainMessage(CameraRenderHandler.MSG_RAW_INIT, surfaceTexture));
+    }
     /**
      * 设置预览大小
      *
@@ -221,6 +224,9 @@ public class CameraRenderer extends Thread {
      */
     public void requestRender() {
         getHandler().sendEmptyMessage(CameraRenderHandler.MSG_RENDER);
+    }
+    public void requestRawRender() {
+        getHandler().sendEmptyMessage(CameraRenderHandler.MSG_RAW_RENDER);
     }
 
     /**
@@ -337,6 +343,25 @@ public class CameraRenderer extends Thread {
         }
     }
 
+    void initRawRender(SurfaceTexture surfaceTexture) {
+        Log.d(TAG, "initRender: ");
+        mEglCore = new EglCore(null, EglCore.FLAG_RECORDABLE);
+        mDisplaySurface = new WindowSurface(mEglCore, surfaceTexture);
+        mDisplaySurface.makeCurrent();
+
+        GLES30.glDisable(GL10.GL_DITHER);
+        GLES30.glClearColor(0, 0, 0, 0);
+        GLES30.glEnable(GL10.GL_CULL_FACE);
+        GLES30.glEnable(GL10.GL_DEPTH_TEST);
+
+        // 渲染器初始化
+        mRenderManager.init(mWeakPresenter.get().getContext());
+
+        if (mWeakPresenter.get() != null) {
+            mWeakPresenter.get().onBindRawSharedContext(mEglCore.getEGLContext());
+        }
+    }
+
     /**
      * 设置预览大小
      *
@@ -380,7 +405,7 @@ public class CameraRenderer extends Thread {
         }
 
         // 是否绘制人脸关键点
-        mRenderManager.drawFacePoint(mCurrentTexture);
+        // mRenderManager.drawFacePoint(mCurrentTexture);
 
         // 显示到屏幕
         mDisplaySurface.swapBuffers();
@@ -405,6 +430,63 @@ public class CameraRenderer extends Thread {
 
         // 计算渲染帧率
         calculateFps();
+    }
+
+    void onDrawRawFrame() {
+        if (mDisplaySurface == null || mWeakSurfaceTexture == null || mWeakSurfaceTexture.get() == null) {
+            return;
+        }
+        // 切换渲染上下文
+        mDisplaySurface.makeCurrent();
+
+        // 更新纹理
+        long timeStamp = 0;
+        synchronized (this) {
+            final SurfaceTexture surfaceTexture = mWeakSurfaceTexture.get();
+            updateSurfaceTexture(surfaceTexture);
+            timeStamp = surfaceTexture.getTimestamp();
+        }
+
+        // 如果不存在外部输入纹理，则直接返回，不做处理
+        if (mInputTexture == OpenGLUtils.GL_NOT_TEXTURE) {
+            return;
+        }
+        // 将数据传递给人脸库
+//        mFaceDetectMan.detect(mInputTexture);
+        // 绘制渲染
+        mCurrentTexture = mRenderManager.drawFrame(mInputTexture, mMatrix);
+
+        // 录制视频
+        if (mWeakPresenter.get() != null) {
+            mWeakPresenter.get().onRecordRawFrameAvailable(mCurrentTexture, timeStamp);
+        }
+
+        // 是否绘制人脸关键点
+        // mRenderManager.drawFacePoint(mCurrentTexture);
+
+        // 显示到屏幕
+        mDisplaySurface.swapBuffers();
+
+//        // 执行拍照
+//        synchronized (mSync) {
+//            if (mCameraParam.isTakePicture) {
+//                if (mImageReader == null) {
+//                    mImageReader = new GLImageReader(mEglCore.getEGLContext(), bitmap -> {
+//                        if (mCameraParam.captureCallback != null) {
+//                            mCameraParam.captureCallback.onCapture(bitmap);
+//                        }
+//                    });
+//                    mImageReader.init(mRenderManager.getTextureWidth(), mRenderManager.getTextureHeight());
+//                }
+//                if (mImageReader != null) {
+//                    mImageReader.drawFrame(mCurrentTexture);
+//                }
+//                mCameraParam.isTakePicture = false;
+//            }
+//        }
+//
+//        // 计算渲染帧率
+//        calculateFps();
     }
 
     /**

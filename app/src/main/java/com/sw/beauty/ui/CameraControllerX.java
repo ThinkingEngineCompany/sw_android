@@ -48,13 +48,17 @@ public class CameraControllerX implements ICameraController, Camera.PreviewCallb
     // 摄像头id
     // SurfaceTexture成功回调
     private OnSurfaceTextureListener mSurfaceTextureListener;
+    private OnSurfaceTextureListener mRawSurfaceTextureListener;
     // 预览数据回调
     private PreviewCallback mPreviewCallback;
     // 输出纹理更新回调
     private OnFrameAvailableListener mFrameAvailableListener;
+    private OnFrameAvailableListener mRawFrameAvailableListener;
     // 相机输出的SurfaceTexture
     private SurfaceTexture mOutputTexture;
+    private SurfaceTexture mRawOutputTexture;
     private HandlerThread mOutputThread;
+    private HandlerThread mRawOutputThread;
     // 上下文
     private final Activity mActivity;
 
@@ -80,10 +84,15 @@ public class CameraControllerX implements ICameraController, Camera.PreviewCallb
         ncnnbodyseg.loadModel(mActivity.getAssets(), current_model, current_cpugpu, 1);
         releaseSurfaceTexture();
         mOutputTexture = createDetachedSurfaceTexture();
+        mRawOutputTexture = createRawSurfaceTexture();
         ncnnbodyseg.setOutputSurface(mOutputTexture);
+        ncnnbodyseg.setRawOutputSurface(mRawOutputTexture);
         ncnnbodyseg.openCamera(facing);
         if (mSurfaceTextureListener != null) {
             mSurfaceTextureListener.onSurfaceTexturePrepared(mOutputTexture);
+        }
+        if (mRawSurfaceTextureListener != null) {
+            mRawSurfaceTextureListener.onSurfaceTexturePrepared(mRawOutputTexture);
         }
     }
 
@@ -92,6 +101,33 @@ public class CameraControllerX implements ICameraController, Camera.PreviewCallb
      *
      * @return
      */
+    private SurfaceTexture createRawSurfaceTexture() {
+        // 创建一个新的SurfaceTexture并从解绑GL上下文
+        SurfaceTexture surfaceTexture = new SurfaceTexture(1);
+        surfaceTexture.detachFromGLContext();
+        surfaceTexture.setDefaultBufferSize(1080, 2400);
+        if (Build.VERSION.SDK_INT >= 21) {
+            if (mRawOutputThread != null) {
+                mRawOutputThread.quit();
+                mRawOutputThread = null;
+            }
+            mRawOutputThread = new HandlerThread("FrameRawAvailableThread");
+            mRawOutputThread.start();
+            surfaceTexture.setOnFrameAvailableListener(texture -> {
+                if (mRawFrameAvailableListener != null) {
+                    mRawFrameAvailableListener.onFrameAvailable(texture);
+                }
+            }, new Handler(mRawOutputThread.getLooper()));
+        } else {
+            surfaceTexture.setOnFrameAvailableListener(texture -> {
+                if (mRawFrameAvailableListener != null) {
+                    mRawFrameAvailableListener.onFrameAvailable(texture);
+                }
+            });
+        }
+        return surfaceTexture;
+    }
+
     private SurfaceTexture createDetachedSurfaceTexture() {
         // 创建一个新的SurfaceTexture并从解绑GL上下文
         SurfaceTexture surfaceTexture = new SurfaceTexture(0);
@@ -144,6 +180,10 @@ public class CameraControllerX implements ICameraController, Camera.PreviewCallb
         mSurfaceTextureListener = listener;
     }
 
+    public void setOnRawSurfaceTextureListener(OnSurfaceTextureListener mRawSurfaceTextureListener) {
+        this.mRawSurfaceTextureListener = mRawSurfaceTextureListener;
+    }
+
     @Override
     public void setPreviewCallback(PreviewCallback callback) {
         mPreviewCallback = callback;
@@ -152,6 +192,11 @@ public class CameraControllerX implements ICameraController, Camera.PreviewCallb
     @Override
     public void setOnFrameAvailableListener(OnFrameAvailableListener listener) {
         mFrameAvailableListener = listener;
+    }
+
+    @Override
+    public void setOnRawFrameAvailableListener(OnFrameAvailableListener listener) {
+        mRawFrameAvailableListener = listener;
     }
 
     @Override
